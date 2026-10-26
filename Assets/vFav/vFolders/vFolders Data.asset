@@ -1,0 +1,920 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb9c12a8c6c949f7af83a3d238359d0, type: 3}
+  m_Name: vFolders Data
+  m_EditorClassIdentifier: 
+  folderDatas_byGuid:
+    keys:
+    - c21f785f64f1eb346985689345afca26
+    - 940727eac087a10408d5b313126ec248
+    - 0de7fe0e51098489aa471c7c8e9be303
+    - 3be5ae992efd8fe45beded379e958239
+    - 7863556d88b814e09ba9cfc75a91d655
+    - f4f2b703901b3554a9a9e2ee7f7872d0
+    - 473b7a3c0695da344be6f6c7caed16cc
+    - aec843e01b3a8794ca17456b21c3063c
+    - 53bce47ef3a84b24abf8369b29baa53d
+    - 247399150bc63dc479bc28345e3830b5
+    - 741c2c6bafaf12d48852bb8ccb797d0d
+    - 4c7167b85f0e84538a884a46b65aa67e
+    - deb6146cdb987e34ba7ff7b1bd7690f3
+    - 8b4276a2f532efd40a235d73e07d563b
+    - 61328f0940dfadf45aa5e53d10abc139
+    - a2e5fef2850340d45a6d532251f2c081
+    - eb45832d8b153674aa96fd22a85714c7
+    - 0b4839a59abbe3f41a24507b874b4ba1
+    - a02c0e775b11c0b4cbc7ee56f3966da4
+    - 5db7164e964ae4c6b82d2283320ad13d
+    - 92a61bccf290b44f8ab34e6450db5354
+    - b2da4ee35af2c68408b130c9d0403fc8
+    - 5a81b09d9315aee4990d096b93af9ef2
+    - 3366beda40be2774c839e16ee39d3214
+    - 9ff8653b10136f147a1204692fc28e27
+    - 5f9b4ba3d8836844db39af3f74c10003
+    - ce85891e436160244937becfcdcf5876
+    - 7ca7615ca3c982741a722c0f9bb56388
+    - d7071f0396b4433469119457f66684e0
+    - 93a978b43a48d074c8609d88e898863f
+    - 84dd68619f752a94384a59d820f9819c
+    - 14cfef84a8eccb24ab2cd7f2bdbcbee0
+    - 57c170295f417fd4088d3b9a92a99350
+    - 2670fc141cff77e43ba814ee2dba687c
+    - 351faa23f59cc6c438805d5b30a24269
+    - 93e29dcd7743fc445a422f45c14368d7
+    - e246783d0e1a18944ab87661b171c506
+    - 363aa2d20a306034ba47b8d662ed5b22
+    - f83e7e9c0d6b1b847a6759aab09f819b
+    - 44dfa7946f7e62b45880af442bf37f3c
+    - 0fdda356191704c4684c7552d918f01c
+    - fdee408ff3d3e454880d38ec3eff4428
+    - ee2cc192b8a704248b4406f6ebe12b98
+    - df563ffbc067a2c4e82df5d672928a9d
+    - 3740dfdcce0245c0b86c83e3628f0b2f
+    - 5ca4e0972ebd1244898169a1c163001c
+    - cf187526f6a542b479bd397addba8a75
+    - f3e5c4f7354fd3d47a20ce0a0bf05561
+    - 7c5c0f01f62acaa469f4674c97eab7e5
+    - b3c5e36a709a74ffdb923609c62e0612
+    - 79af3b273fc2fcf4c99a698343200dba
+    - 9563c462db2274ea9852820c0179e1be
+    - 0fadc5f15147772489cabfb55b9f402c
+    - 5845ffd5eae3fe94fbcf46700f1a2cf7
+    - b0c0bd948f77bf8448f8e06e144e4c30
+    - d677dfc6e20b1be49be0895a03df093e
+    - 0e10f5a5d37ba8a4a8e7a57afbee6118
+    - d2b1b66745c13474ab021c6d06e7fd88
+    - cd6ccb545d755a442bf125019e760045
+    - 086c4c1a6a9456a4eb0afa6eb9252af8
+    - 66208304174648547945bd5940f71d7a
+    - 0b2f1a3f8972db747813b679d1fdd98b
+    - 6d53d033b26cc49479be7b928b1e438e
+    - c12a5ecaa8454d1458d22d59a595ad8b
+    - 97410f8bad3ad4645be81f981cb27a1f
+    - 69c6fd644dc94fc42a812e62d25438c9
+    - 7d26d6108270ed64b9fcfa59660faef0
+    - 6a40f9f54970dd547a67241c46be44ed
+    - f3bdca1fb19162c4f80c1a7e62784873
+    - bf862f39bc97d844da17b5790765ff82
+    - f135ed39ad3df8d41810432b6dd61e95
+    - 63e13400310549241bf8c6a41fa25691
+    - 8af321b6edb88b342983ca206038b533
+    - 2b2db88fa2393f34ba1eff4aa6e13640
+    - 93ef566a6c15f6145b579875228a88ff
+    - 9d63391a35276e44aaf3a4550c26ac9b
+    - 1bd09a67d9ac79d43828bbe24871e7d9
+    - 8bdfd354090f03648a6d69f2d6489120
+    - c104114914479ec47900e4b566c6e2a3
+    - cca2df69756d8d54d8cde9384176fe31
+    - 0f894c5ee268d6946a068ad0a0331b17
+    - a819f46f374f2cf4bb234ad51270d5e2
+    - 9f84c02aa78da4ac9b444d98d97f7cc4
+    - 96a328019e42349aabc478b546b8605e
+    - 66297743248ab4e47abdc371a59f1111
+    - 1f19f272c71674582bed1d93925da003
+    - 1fbfcb6aeaa7f40e69a0daff450a2450
+    - 017d961d683092b409b8ed456cd68a22
+    - ad435acd68987a54aabad5037f80f5f1
+    - 1ffdff59f7275d04bbb8e1ef16fabbc3
+    - 55f8d30c5e1864cc8b3b1d73913192aa
+    - 425c3aed47dd05444960ca41af18e591
+    - 3306ce0ede814a84c8d289893da72b7a
+    - 34eb7869be26e174ea9d65bfb38810bb
+    - ac6b2a1e0a55501418af709b3886497e
+    - e0714b4d43f521d4ba12e95c9d01cb0c
+    - 16f94b7916a916549a893b8893945269
+    - 5ed8f2396078eeb4193b968c61bd4550
+    - a277fd3a8bd6366479a6d2143ae6aebc
+    - 035b5928c91679647997dbc8bd78096d
+    - 508750371f306d745a6ec90e811a1ee6
+    - 8bdf493cc027af9428faf705fbb63466
+    - 88791683abdca2149b8a76892dfcb97c
+    - 557f3694283f5304b9cde2a603e5e877
+    - 709acd34655b9f54d87e8690b6d5eeff
+    - b339f7698709abe4dae9cd14a8cf3f52
+    - 14014043ea288474caa032af11dfceed
+    - eb125289721a4c24b884417838ca578f
+    - 946d1300195814a8da8e3ee48c792be3
+    - 4cf567a3b28a7ff429a6c25fbb924eff
+    - c4a7f2ea9ead4157ba065896f371bddb
+    - 802b26ca5d55185429192c24b2bfd6be
+    - add5532ccd235ea4e8340da7baf279e2
+    - f6d44eb305ada264da29f4305901a492
+    - 44babb33acef48741b2b18ceb246bca4
+    - 12119009e65745aaa17dfd9c2f68bc67
+    - 8358788ac7b241ffba3fe41428343abd
+    - 01765b5c066908b40893c3ad037a3079
+    - 4f47bf01c35e34bff9d1d4cd970d3f0f
+    - 9fcfa5795f2d5d64cacb80dafe4a3403
+    - 425bd703272bd8849aab6b1e63a8ede0
+    - 3829c2a1f8412054cb8bd81777bd67ce
+    - 3d211b76569494544a47a4ace2b9f434
+    - 15b46cc08168417b9289f7ead3db0362
+    - 1fbee23cdc4e7e04d9fcde27e7e6729a
+    - 267394244d9b9944e98c503cb94e6156
+    - 2b863cde717903646b909343f803bc12
+    - 918b2a79189033848b56b0bcb621da55
+    - 78c4dad714637b243bc94893eaa62d69
+    - 7c6e45a76403d214c800cf0c1c4d50d3
+    - 0f152a0903b5f6940b4420d76b286943
+    - e0a081f07edf240a4926ee745c27a414
+    - 0df1b231aacc50f44b62160aa77b54b0
+    - 6ffca581d02232a42ba484d3f0f0d60f
+    - 9a419914c64f4b8418b6aa1f1e70905c
+    - e6bde735db79e9142a5e6c794dfe46b7
+    - a77acfd85096ae14398ce5617e90302f
+    - ebe55ab049025414487fff771afce779
+    - 37d451f4107b15a488930b4e3fb24317
+    - 8664ba06cdcc6b0469b9c79cfa8e6bf7
+    - c92a370425f84bb4dacf4d23282cb6a9
+    - 30a3edc9b96675b449c276baaf404b93
+    - f3d22c33c6e87134b903408a9a39ba00
+    - 99f6e62daf9d94d4e96dda5fd72a54c1
+    - aabf46df388e8ee4da80dcf54cefa1f9
+    - 0c2d4b6a352847539bef95b3af2e6e7b
+    - a52063842c9d6b042b33717f4eea8b72
+    - f2f9dc6b733b4a7cb8103c053e128ab4
+    - 28d5428482cab6447b2a183789e514ef
+    - e3da3c0aa5ab075458684e149221778d
+    - 650cfba89340092409f9e9b86950cf64
+    - 12bd0a243e920bd488fbff501e54dd4c
+    - 5769cf0526a1198459c979dd0add237b
+    - 6f2e325dcc254a8469f3e823a5e33b7a
+    - 30a43e7e6fbab514785e055961a08424
+    - ec8a6aec74c97214db0843ee16b9ee09
+    - 06013ac4796f54b48976d477f7cd8693
+    - 4856d5630986c344bb119bd59856d939
+    - 9992c782e651a3a41a307abbe0eda267
+    - 1a7ca3402f39dc74a9c55b26206b4a9b
+    - 26c665bb56f217445acdcd9163aa2b30
+    - f0e57c4cdc7cc154eafd15ee4ac36e2d
+    - 7e08ba2166bb1d24ab92a6a907e4df50
+    - 3c2b739b367994d4ab283828657ac6d3
+    - 49af2fb71ac84994d9e1829eb0b00dec
+    - c24cc93deb960f8458dc627ca3405a0d
+    - 8cfdc79f46a369647a7216e10451a5d6
+    - 04befc6757583a5428999f6561caa710
+    - 8c4958a785cce894ba2d442dadafe965
+    - d97afe9652c50b3479a385ef77679f65
+    - 1ffe4836b79842a4c850420fb16730b0
+    - a86a5841e424d45409cdd99ffd8d3330
+    - b6aa9451a8c73794ba146367587adce7
+    - 28678a7859e9c8442ad1dda2fd1cb5ce
+    - 60feacb587bdb69449aef5e7b184e665
+    - 00672da64487dbf40950020ca0794b66
+    - 377abada34ce12f41ad7bc1a278b3b9c
+    - 83ad26094fcae4240a7fbeeceabb1b51
+    - c2d21aabf17736348a146c971cbf34fe
+    - b52cc20095deb68458ddede983da3358
+    - c20e12786fed4744cacaae75dde92833
+    - f6f2360a0ab0bd34da421a0303a94e1d
+    - f2409ecbcb1b59047889a626d9975c94
+    - 3fa866cf0aa779d489b6d61964d68357
+    - d3203057f516bb441ae87c100d6849dd
+    - 48a29fa77d4811749acf81af7c766160
+    - 53ae33794f77c3f428c710b03c719a9c
+    - 99a5bef5c5dc63d428213ea95f9d962e
+    - 12c28551fb79a6e4c84b53666cc3b2bd
+    - 0425fb5729ce2c7409f97558783ba305
+    - 01e1f91a3cbac334e99e8c19fdcebde4
+    - d61b5500099614e40b95b6a85f1f89b5
+    - d489ec69eac1c214889a34603f192219
+    - a8f264098f3b84157b0628a5619fa2f3
+    - a6dfbcbf470d76c4d967c77efa0026e8
+    - 0363903b8b056cf4798ad1054eef4713
+    - 7f511b2709d25c347862db097a63065f
+    - 0eb429510c6b4a24e869fa3cc45e3b58
+    - 78c5d74f2bd04bd418b2998d20455ee2
+    - 34a0303f6b33a58469259e387d0c8cb4
+    - 0c1aa99483b6c2b468ab8fda095b002e
+    - 5a556f30204a57b49a803b29967cf641
+    - 077eb0dbb309abb42a29c1da8bf1585f
+    - 6b7181f7847d1c74fb280f6cd6bfb6b2
+    - 2ffb02a2771b20e43b47663b7c02288b
+    - e75f6e1dfc15bde4d80baacd0f33fe11
+    - aabe6f6c81ebbd7478861534f9b82b08
+    - d824e1f70234c9a4d8b85812e053b262
+    - ec2b8d7bb6248ab42b9f331b009718c7
+    - a6fe3f8b173b7ea4b871746b291f33a9
+    - 1516cb7a10b3d3f4f8944a7a3bd2a087
+    - fe299c708cc8fba48a6bfb5baf133778
+    - 82e50d27ddc620344b09743fc9cb1c2e
+    - 6543dc3c546a9414eba0d35ec6d18a1e
+    - 26c08c8d22519b84aa15ca787aa67464
+    - 5266b4849a0269b419692f30194b6fec
+    - ff719f72d04f7c34a8fb659197d8a538
+    - ce1db44e1cee9ed4096d1f56bfc15761
+    - 5e7a7539d986da04d8ced64f5622ce3a
+    - 4f10468e5822faa48867b9d37557d798
+    - 3bd017fc8539d454285a9da9c83be654
+    - c27e70bb035aa894cbda9d555b401ee2
+    - 8623ec12f35c4c743a27166d53b91669
+    - 7fd3aaba95f40444ba6016fcb5fcd15f
+    - 8ec4d5ad5bb643ed9906980c6f3c247d
+    - 45d9e5be187f4a86a80cc866506b796d
+    - ecde62e27d844f1da3d290e9669095d9
+    - 83f5acc7d20c42b7bb0d82226382cfee
+    - 20196cb59b4043a6ac41d238a32b276c
+    - 1d56da6a967d45e1b572e1babe3be0e8
+    - c338bca5cf1644eda3cecdade6262b72
+    - 71ab0508e966ef54fbcdc1e775a2424e
+    - c645ee3e97606bb4ba43ce72466f7f0b
+    - 6525f33f04dfb9c43affbabda0a20589
+    - ee292243e5ea44e26974a4e682565dfe
+    - 50af901e84c282a46a3c1213c07c68a2
+    - f158455a2dd08174aaae5bd3ce7ad505
+    - 1f7b722bb1ec7364ab7df97ad67717ed
+    - fad08bfcfc229554c86b4a498a059e2d
+    - 42e5c62bf90019c40a53479f77111d26
+    - d726484c9ea2b834f97f414060a661ef
+    - de11b970a0c543de8ef87380a9e3a0a4
+    - 3fb96c437d80fa342aa2ebb291c6631e
+    - 53caca62d1b57764b9054e5e2d1bd7f5
+    - d780525c47c694b47b78d186809a55ff
+    - 09de3014550841be9a0cf7e8517ca6a0
+    - a67b5339d8d949ea95b4c8475afc967f
+    - 5e6d7e718aa8d8c498033ea4249a164e
+    - bc106375b113db14fa680632af3aace7
+    - e10984897cbcf814e93e54e56c8dacf0
+    - e500cc4d61ba93843a8aac10b6beb2c2
+    - 6d7ef67f59f210e47a39b7092a0a0ebc
+    - ddb176743c1e2014cad699bfa1de7efc
+    - f7b662e6b1a31094cb3dd4556286b099
+    - c9e446453a80d5342815eaa404e6030a
+    - 05e5d74d1cef4826964eb39e5aa4a998
+    - fc6f0c9e309d4df6884d30ead8ffa05e
+    - 8948f9239d6fa774e91969ef792f365b
+    - b7ac3edde0510ab49b89c406152c23c5
+    - cc6490816f7ed114c9dab60d748a368c
+    - 68d099bcfea0dd4458b8b879d78e598d
+    - 4b77a7474551298478fbfe11c05d715b
+    - bf335b2a555a0274b97ea6086a312acb
+    - 41c91491b29ea1e43820133292e19b56
+    - f07a176d3e16fd54b85c0d90b70ee76a
+    - 79b0c7f8721f8f14297a3a2231819129
+    - c882634948f06864c8793a621836b03c
+    - ffeadf61ae167d64ab20640b32c5b44f
+    - 46c865f99f19f4f408bff4306410f2d3
+    - 772b024dfbaec1a4c9daca0318fe2b14
+    - de0a914b6ed964c449901aba8835280d
+    - 3e2ca760f105f5549ac6d2e734ecd23e
+    - a2a4c8f4cda5b4345993b1b00f1b7f96
+    - c693e28345f035c4398a104ae37fe3fc
+    - a635ff83bfcbdff4d83ae2b0da71af22
+    - 5ff96aaca94735247a7c9a29144d132f
+    - e44b82c4e32053040b8e4afc5d483759
+    - 7965daaafdf602845885036a6c768985
+    - 2657ab37201d94347ab70533a8988b2e
+    - fbcc95ff3f084bd4b4510a82e4ddb12a
+    - 3649f7947ae249418eadbc3a27e3236f
+    - 06adb7235ee340f1bd977e6c7b477ffd
+    - f9323c5f92ff4cdd99d236286e4e1912
+    - e0d1f41baadd2d24e8f3ec19da439b1b
+    - aed5282cb4f44255a17589b39a05bb2a
+    - fa57bb4e4dd54ea2966248e39c02cf51
+    - 21e0c5a27cce67b4097dcf7d2be1b6e9
+    - ff8209ce03ad7684ebbbaf2a21cd3b55
+    - 1dd6553366f419e46a152ad3ccf3481a
+    - 609c30d190028a54ebd413c821163ff9
+    - 18d73938552a70040adf29f551e8fd22
+    - 45066feb3a5457746a58cd7e7f5a9153
+    - 0809ab5279668e7479740b3dd0dc3996
+    - 0ca5dda7131bedd428d33bfa12c21e1c
+    - 785a6428978c68f4a9d7c6163c7999f9
+    - 57d33e46012be4643bf89692c89ff6bb
+    - d7b83d3ecf13d6a44b51d54a4535a65b
+    - f21b9740737eb7443b98ccad6e481f04
+    - f3ddbba160746d74ab8ed2ea45eca3b2
+    - 9059232af4c05a34d9f2178971c5537a
+    - 87c10232ad4ab96429b4587da0e53e17
+    values:
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 6
+      iconNameOrGuid: 
+    - colorIndex: 8
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 4
+      iconNameOrGuid: 
+    - colorIndex: 7
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 3
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: AnimationClip Icon
+    - colorIndex: 8
+      iconNameOrGuid: 
+    - colorIndex: 10
+      iconNameOrGuid: 
+    - colorIndex: 9
+      iconNameOrGuid: 
+    - colorIndex: 5
+      iconNameOrGuid: 
+    - colorIndex: 2
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 1
+      iconNameOrGuid: 
+    - colorIndex: 0
+      iconNameOrGuid: Shader Icon
+    - colorIndex: 6
+      iconNameOrGuid: 
