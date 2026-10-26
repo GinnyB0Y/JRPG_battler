@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ace1a246617954da8d1a850df65b1b, type: 3}
+  m_Name: npc_range
+  m_EditorClassIdentifier: 
+  displayName: 
+  prefab: {fileID: 1810530499472170092, guid: c011ae089d6d61d458fd0bf683a6a6d5, type: 3}
+  maxHealth: 20
+  speed: 5
+  attack: 5
+  defense: 5
+  role: 1

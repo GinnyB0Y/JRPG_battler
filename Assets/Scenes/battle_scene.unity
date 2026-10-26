@@ -169,7 +169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: player_side_3
+      value: npc_range_2
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -214,17 +214,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ea545468aafb64b8d13ce805551966, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 5829696282010639952, guid: 43e4bd2dedb09d248b88bb5b44b9f70c, type: 3}
-  npcPrefab: {fileID: 1810530499472170092, guid: f73b0cc0cc61edb4aafb1be211175993, type: 3}
-  enemyPrefab: {fileID: 2059288696799385672, guid: cbbda7c7de533b44bb2025efbcc9d20f, type: 3}
-  playerPositions:
+  playerData: {fileID: 11400000, guid: da6422d2cd2bcca42ba4f0686bb842ff, type: 2}
+  npcPool:
+  - {fileID: 11400000, guid: 1df25257f96609a4ba4f29a120467d64, type: 2}
+  - {fileID: 11400000, guid: b68516ba0b124ba418c3452745c774a7, type: 2}
+  enemyPool:
+  - {fileID: 11400000, guid: 6b00ba4db22c9c24889db7e9d1fa9cdc, type: 2}
+  - {fileID: 11400000, guid: ee40a9095a2047942b3b1c538a91417c, type: 2}
+  npcMeleePositions:
   - {fileID: 1647008210034703284}
   - {fileID: 532362521}
-  - {fileID: 57623749}
+  npcRangePositions:
   - {fileID: 2094048953}
-  enemyPositions:
-  - {fileID: 2111823970}
+  - {fileID: 57623749}
+  enemyMeleePositions:
   - {fileID: 1035877114}
+  - {fileID: 2111823970}
+  enemyRangePositions:
   - {fileID: 640930308}
   - {fileID: 1602479188}
 --- !u!4 &211241442
@@ -550,7 +556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: player_side_2
+      value: npc_melee_2
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -616,7 +622,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: enemy_side_3
+      value: enemy_range_1
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -839,7 +845,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: enemy_side_2
+      value: enemy_melee_2
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -905,7 +911,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: enemy_side_4
+      value: enemy_range_2
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -971,7 +977,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: player_side_4
+      value: npc_range_1
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -1037,7 +1043,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: enemy_side_1
+      value: enemy_melee_1
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -1103,7 +1109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_Name
-      value: player_side_1
+      value: npc_melee_1
       objectReference: {fileID: 0}
     - target: {fileID: 8868410275977882430, guid: 460f35cea9f12324ea59675eb60ef6a6, type: 3}
       propertyPath: m_IsActive
@@ -1126,13 +1132,13 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
-  - {fileID: 211241442}
   - {fileID: 1032643409}
-  - {fileID: 2111823969}
+  - {fileID: 211241442}
   - {fileID: 1035877113}
+  - {fileID: 2111823969}
   - {fileID: 640930307}
   - {fileID: 1602479187}
   - {fileID: 1647008210034703283}
   - {fileID: 532362520}
-  - {fileID: 57623748}
   - {fileID: 2094048952}
+  - {fileID: 57623748}

@@ -1,12 +1,17 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private GameObject npcPrefab;
-    [SerializeField] private GameObject enemyPrefab;
-    [SerializeField] private Transform[] playerPositions;
-    [SerializeField] private Transform[] enemyPositions;
+    [SerializeField] private PlayerData playerData;
+    [SerializeField] private NpcData[] npcPool;
+    [SerializeField] private EnemyData[] enemyPool;
+
+    [SerializeField] private Transform[] npcMeleePositions;
+    [SerializeField] private Transform[] npcRangePositions;
+    [SerializeField] private Transform[] enemyMeleePositions;
+    [SerializeField] private Transform[] enemyRangePositions;
 
     private void Awake()
     {
@@ -16,27 +21,48 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnPlayerTeam()
     {
-        int count = GetTeamSize(BattleSettings.PlayerTeamSize, playerPositions);
+        Transform[] line = BuildLine(npcMeleePositions, npcRangePositions);
+        int size = Mathf.Min(BattleSettings.PlayerTeamSize, line.Length);
 
-        for (int i = 0; i < count; i++)
-            Spawn(i == 0 ? playerPrefab : npcPrefab, playerPositions[i]);
+        List<UnitData> team = new List<UnitData> { playerData };
+        team.AddRange(PickRandom(npcPool, size - 1));
+
+        SpawnTeam(team, line);
     }
 
     private void SpawnEnemyTeam()
     {
-        int count = GetTeamSize(BattleSettings.EnemyTeamSize, enemyPositions);
+        Transform[] line = BuildLine(enemyMeleePositions, enemyRangePositions);
+        int size = Mathf.Min(BattleSettings.EnemyTeamSize, line.Length);
 
+        SpawnTeam(PickRandom(enemyPool, size), line);
+    }
+
+    private static Transform[] BuildLine(Transform[] meleePositions, Transform[] rangePositions)
+    {
+        return meleePositions.Concat(rangePositions).ToArray();
+    }
+
+    private static IEnumerable<T> PickRandom<T>(T[] pool, int count)
+    {
         for (int i = 0; i < count; i++)
-            Spawn(enemyPrefab, enemyPositions[i]);
+            yield return pool[Random.Range(0, pool.Length)];
     }
 
-    private static int GetTeamSize(int requestedSize, Transform[] positions)
+    private void SpawnTeam(IEnumerable<UnitData> team, Transform[] line)
     {
-        return Mathf.Min(requestedSize, positions.Length);
+        int front = 0;
+        int back = line.Length - 1;
+
+        foreach (UnitData unit in team)
+        {
+            Transform position = unit.Role == UnitRole.Melee ? line[front++] : line[back--];
+            Spawn(unit, position);
+        }
     }
 
-    private void Spawn(GameObject prefab, Transform position)
+    private void Spawn(UnitData unit, Transform position)
     {
-        Instantiate(prefab, position.position, position.rotation, transform);
+        Instantiate(unit.Prefab, position.position, position.rotation, transform);
     }
 }
