@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    private const int MaxTeamSize = 4;
-
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject npcPrefab;
     [SerializeField] private GameObject enemyPrefab;
@@ -18,7 +16,7 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnPlayerTeam()
     {
-        int count = GetTeamSize(playerPositions);
+        int count = GetTeamSize(BattleSettings.PlayerTeamSize, playerPositions);
 
         for (int i = 0; i < count; i++)
             Spawn(i == 0 ? playerPrefab : npcPrefab, playerPositions[i]);
@@ -26,15 +24,15 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnEnemyTeam()
     {
-        int count = GetTeamSize(enemyPositions);
+        int count = GetTeamSize(BattleSettings.EnemyTeamSize, enemyPositions);
 
         for (int i = 0; i < count; i++)
             Spawn(enemyPrefab, enemyPositions[i]);
     }
 
-    private static int GetTeamSize(Transform[] positions)
+    private static int GetTeamSize(int requestedSize, Transform[] positions)
     {
-        return Mathf.Min(positions.Length, MaxTeamSize);
+        return Mathf.Min(requestedSize, positions.Length);
     }
 
     private void Spawn(GameObject prefab, Transform position)
