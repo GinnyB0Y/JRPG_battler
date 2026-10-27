@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class UnitData : ScriptableObject
@@ -11,12 +12,16 @@ public abstract class UnitData : ScriptableObject
     [SerializeField, Min(0)] private int attack = 5;
     [SerializeField, Min(0)] private int defense = 5;
 
-    public string DisplayName => displayName;
+    [Header("Abilities")]
+    [SerializeField] private AbilityData[] abilities;
+
+    public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
     public GameObject Prefab => prefab;
     public int MaxHealth => maxHealth;
     public int Speed => speed;
     public int Attack => attack;
     public int Defense => defense;
+    public IReadOnlyList<AbilityData> Abilities => abilities;
 
     public abstract UnitRole Role { get; }
 }
