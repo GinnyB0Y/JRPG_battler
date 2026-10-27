@@ -31,9 +31,17 @@ public class CombatRules
 
     public IEnumerable<BattleUnit> GetTargets(BattleUnit user, AbilityData ability)
     {
-        Team side = ability.TargetSide == TargetSide.Enemy ? user.Team.Opposite() : user.Team;
+        Team side;
 
-        return ability.RequiresFrontTarget ? field.GetFrontLine(side) : field.GetAlive(side);
+        if (ability.TargetSide == TargetSide.Enemy)
+            side = user.Team.Opposite();
+        else
+            side = user.Team;
+
+        if (ability.RequiresFrontTarget)
+            return field.GetFrontLine(side);
+        else
+            return field.GetAlive(side);
     }
 
     public bool IsValid(BattleAction action)
@@ -49,7 +57,13 @@ public class CombatRules
         if (ability.Effect != AbilityEffect.Damage)
             return 1f;
 
-        int attack = field.IsFront(user) ? user.Attack - ability.FrontAttackPenalty : user.Attack;
+        int attack;
+
+        if (field.IsFront(user))
+            attack = user.Attack - ability.FrontAttackPenalty;
+        else
+            attack = user.Attack;
+
         float chance = BaseHitChance + (attack - target.Defense) * HitChancePerPoint;
         return Math.Clamp(chance, MinHitChance, MaxHitChance);
     }
@@ -62,15 +76,21 @@ public class CombatRules
         AbilityData ability = action.Ability;
         float hitChance = GetHitChance(action.User, ability, action.Target);
         bool isHit = random.NextDouble() < hitChance;
-        int amount = isHit ? GetAmount(ability, action.Target) : 0;
+        int amount;
+
+        if (isHit)
+            amount = GetAmount(ability, action.Target);
+        else
+            amount = 0;
 
         return new ActionOutcome(action, isHit, amount, hitChance);
     }
 
     private static int GetAmount(AbilityData ability, BattleUnit target)
     {
-        return ability.Effect == AbilityEffect.Heal
-            ? Math.Min(ability.Power, target.MissingHealth)
-            : ability.Power;
+        if (ability.Effect == AbilityEffect.Heal)
+            return Math.Min(ability.Power, target.MissingHealth);
+        else
+            return ability.Power;
     }
 }

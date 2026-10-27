@@ -57,13 +57,21 @@ public class UnitStatusView : MonoBehaviour
 
     private void Refresh()
     {
-        healthText.text = Unit.IsAlive ? $"{Unit.Health}/{Unit.MaxHealth}" : "DEAD";
+        if (Unit.IsAlive)
+            healthText.text = $"{Unit.Health}/{Unit.MaxHealth}";
+        else
+            healthText.text = "DEAD";
 
         if (healthFill != null)
             healthFill.fillAmount = Unit.HealthRatio;
 
         if (canvasGroup != null)
-            canvasGroup.alpha = Unit.IsAlive ? 1f : deadAlpha;
+        {
+            if (Unit.IsAlive)
+                canvasGroup.alpha = 1f;
+            else
+                canvasGroup.alpha = deadAlpha;
+        }
 
         if (stunIcon != null)
             stunIcon.SetActive(Unit.IsStunned);

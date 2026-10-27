@@ -60,17 +60,31 @@ public class BattleLoop
 
     private async UniTask PlayTurnAsync(BattleUnit next, CancellationToken cancellationToken)
     {
-        ICommandSource commands = next.Team == Team.Player ? playerCommands : enemyCommands;
+        ICommandSource commands;
+
+        if (next.Team == Team.Player)
+            commands = playerCommands;
+        else
+            commands = enemyCommands;
 
         ActorChoiceStarted?.Invoke(next.Team);
-        BattleUnit unit = next.IsStunned ? next : await ChooseActorAsync(commands, next, cancellationToken);
+
+        BattleUnit unit;
+
+        if (next.IsStunned)
+            unit = next;
+        else
+            unit = await ChooseActorAsync(commands, next, cancellationToken);
 
         queue.Begin(unit);
         TurnStarted?.Invoke(unit);
 
-        BattleAction action = unit.IsStunned
-            ? BattleAction.Stunned(unit)
-            : await ChooseActionAsync(commands, unit, cancellationToken);
+        BattleAction action;
+
+        if (unit.IsStunned)
+            action = BattleAction.Stunned(unit);
+        else
+            action = await ChooseActionAsync(commands, unit, cancellationToken);
 
         if (action.IsStunned)
             unit.SpendStunnedTurn();

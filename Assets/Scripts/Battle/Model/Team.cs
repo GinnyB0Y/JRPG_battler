@@ -8,6 +8,9 @@ public static class TeamExtensions
 {
     public static Team Opposite(this Team team)
     {
-        return team == Team.Player ? Team.Enemy : Team.Player;
+        if (team == Team.Player)
+            return Team.Enemy;
+        else
+            return Team.Player;
     }
 }

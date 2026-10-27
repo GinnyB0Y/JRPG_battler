@@ -19,7 +19,7 @@ MonoBehaviour:
   attack: 5
   defense: 5
   randomHP: 1
-  maxHealthRange: {x: 15, y: 25}
+  maxHealthRange: {x: 5, y: 10}
   randomSpeed: 1
   maxSpeedRange: {x: 3, y: 7}
   randomAttack: 1
@@ -28,4 +28,9 @@ MonoBehaviour:
   maxDefenseRange: {x: 3, y: 7}
   abilities:
   - {fileID: 11400000, guid: 7a1e3c5b9d2f4a6c8e0b1d3f5a7c9e21, type: 2}
+  abilitiesPlus:
+  - {fileID: 11400000, guid: 75d182d5f87e4f718d7b7a8ab5949576, type: 2}
+  - {fileID: 11400000, guid: 7a1e3c5b9d2f4a6c8e0b1d3f5a7c9e23, type: 2}
+  abilityCounter: 1
+  abilityChance: 50
   role: 0

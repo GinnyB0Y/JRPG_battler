@@ -112,10 +112,9 @@ public class BattleManager : MonoBehaviour
     private void SpawnPlayerTeam()
     {
         Transform[] line = BuildLine(npcMeleePositions, npcRangePositions);
-        int size = Mathf.Min(BattleSettings.PlayerTeamSize, line.Length);
 
         List<UnitData> team = new List<UnitData> { playerData };
-        team.AddRange(PickRandom(npcPool, size - 1));
+        team.AddRange(BattleSettings.NpcRoles.Select(role => PickByRole(npcPool, role)));
 
         SpawnTeam(team, Team.Player, line, npcMeleePositions.Length);
     }
@@ -123,9 +122,9 @@ public class BattleManager : MonoBehaviour
     private void SpawnEnemyTeam()
     {
         Transform[] line = BuildLine(enemyMeleePositions, enemyRangePositions);
-        int size = Mathf.Min(BattleSettings.EnemyTeamSize, line.Length);
+        List<UnitData> team = BattleSettings.EnemyRoles.Select(role => PickByRole(enemyPool, role)).ToList<UnitData>();
 
-        SpawnTeam(PickRandom(enemyPool, size), Team.Enemy, line, enemyMeleePositions.Length);
+        SpawnTeam(team, Team.Enemy, line, enemyMeleePositions.Length);
     }
 
     private static Transform[] BuildLine(Transform[] meleePositions, Transform[] rangePositions)
@@ -133,10 +132,17 @@ public class BattleManager : MonoBehaviour
         return meleePositions.Concat(rangePositions).ToArray();
     }
 
-    private IEnumerable<T> PickRandom<T>(T[] pool, int count)
+    private T PickByRole<T>(T[] pool, UnitRole role) where T : UnitData
     {
-        for (int i = 0; i < count; i++)
-            yield return pool[teamRandom.Next(pool.Length)];
+        T[] matching = pool.Where(data => data.Role == role).ToArray();
+
+        if (matching.Length == 0)
+        {
+            Debug.LogWarning($"No {typeof(T).Name} with role {role} in pool, picking any");
+            matching = pool;
+        }
+
+        return matching[teamRandom.Next(matching.Length)];
     }
 
     private void SpawnTeam(IEnumerable<UnitData> team, Team side, Transform[] line, int vanguardSize)
@@ -144,10 +150,22 @@ public class BattleManager : MonoBehaviour
         int front = 0;
         int back = line.Length - 1;
 
-        foreach (UnitData data in team)
+        foreach (UnitData data in team.Take(line.Length))
         {
-            int slot = data.Role == UnitRole.Melee ? front++ : back--;
-            BattleRow row = slot < vanguardSize ? BattleRow.Vanguard : BattleRow.Rearguard;
+            int slot;
+
+            if (data.Role == UnitRole.Melee)
+                slot = front++;
+            else
+                slot = back--;
+
+            BattleRow row;
+
+            if (slot < vanguardSize)
+                row = BattleRow.Vanguard;
+            else
+                row = BattleRow.Rearguard;
+
             Spawn(data, side, slot, row, line[slot]);
         }
     }
@@ -155,7 +173,7 @@ public class BattleManager : MonoBehaviour
     private void Spawn(UnitData data, Team side, int slot, BattleRow row, Transform position)
     {
         GameObject instance = Instantiate(data.Prefab, position.position, position.rotation, transform);
-        BattleUnit unit = new BattleUnit(data, data.RollStats(teamRandom), side, slot, row);
+        BattleUnit unit = new BattleUnit(data, data.RollStats(teamRandom), data.RollAbilities(teamRandom), side, slot, row);
         units.Add(unit);
 
         UnitView view = instance.AddComponent<UnitView>();

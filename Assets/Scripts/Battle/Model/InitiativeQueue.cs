@@ -33,7 +33,11 @@ public class InitiativeQueue
         while (nextIndex < order.Count && !order[nextIndex].IsAlive)
             nextIndex++;
 
-        unit = nextIndex < order.Count ? order[nextIndex] : null;
+        if (nextIndex < order.Count)
+            unit = order[nextIndex];
+        else
+            unit = null;
+
         return unit != null;
     }
 

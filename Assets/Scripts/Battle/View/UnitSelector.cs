@@ -90,7 +90,12 @@ public class UnitSelector : MonoBehaviour
                     continue;
 
                 BattleUnit pointed = GetPointedUnit();
-                BattleUnit next = pointed != null && hoverable.Contains(pointed) ? pointed : null;
+                BattleUnit next;
+
+                if (pointed != null && hoverable.Contains(pointed))
+                    next = pointed;
+                else
+                    next = null;
 
                 if (next != hovered)
                 {
@@ -127,7 +132,11 @@ public class UnitSelector : MonoBehaviour
             return null;
 
         UnitView view = hit.collider.GetComponentInParent<UnitView>();
-        return view != null ? view.Unit : null;
+
+        if (view != null)
+            return view.Unit;
+        else
+            return null;
     }
 
     private void CreateActiveMarker(GameObject prefab)

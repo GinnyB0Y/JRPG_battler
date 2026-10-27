@@ -155,7 +155,11 @@ public class BattleUI : MonoBehaviour, ICommandSource
         options.Add(new ChoiceOption("Skip", true));
 
         int index = await ChooseAsync($"{unit.Name}: выбирает действие", options, cancellationToken);
-        return index < abilities.Count ? abilities[index] : null;
+
+        if (index < abilities.Count)
+            return abilities[index];
+        else
+            return null;
     }
 
     private async UniTask<BattleUnit> ChooseTargetAsync(BattleUnit unit, AbilityData ability, CancellationToken cancellationToken)
@@ -169,7 +173,11 @@ public class BattleUI : MonoBehaviour, ICommandSource
                 ChooseAsync($"{ability.DisplayName}: выбирает цель", options, phase.Token));
 
             phase.Cancel();
-            return winner == 0 ? target : null;
+
+            if (winner == 0)
+                return target;
+            else
+                return null;
         }
     }
 
@@ -259,11 +267,21 @@ public class BattleUI : MonoBehaviour, ICommandSource
     {
         bool isVictory = winner == Team.Player;
 
-        AddLog(isVictory ? "<b>Victory</b>" : "<b>Defeat</b>");
+        if (isVictory)
+        {
+            AddLog("<b>Victory</b>");
+            resultText.text = "ПОБЕДА";
+            resultText.color = victoryColor;
+        }
+        else
+        {
+            AddLog("<b>Defeat</b>");
+            resultText.text = "ПОРАЖЕНИЕ";
+            resultText.color = defeatColor;
+        }
+
         HighlightStatus(null);
         ShowSlots(queueSlots, 0);
-        resultText.text = isVictory ? "ПОБЕДА" : "ПОРАЖЕНИЕ";
-        resultText.color = isVictory ? victoryColor : defeatColor;
         resultPanel.SetActive(true);
     }
 
@@ -317,14 +335,21 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
         int chance = Mathf.RoundToInt(outcome.HitChance * 100f);
 
-        return outcome.IsHit
-            ? $"{user} попадает по {target} с {ability}: -{outcome.Amount} HP ({chance}%)"
-            : $"{user} промахивается по {target} с {ability} ({chance}%)";
+        if (outcome.IsHit)
+            return $"{user} попадает по {target} с {ability}: -{outcome.Amount} HP ({chance}%)";
+        else
+            return $"{user} промахивается по {target} с {ability} ({chance}%)";
     }
 
     private static string Colored(BattleUnit unit)
     {
-        string color = unit.Team == Team.Player ? PlayerColor : EnemyColor;
+        string color;
+
+        if (unit.Team == Team.Player)
+            color = PlayerColor;
+        else
+            color = EnemyColor;
+
         return $"<color={color}>{unit.Name}</color>";
     }
 

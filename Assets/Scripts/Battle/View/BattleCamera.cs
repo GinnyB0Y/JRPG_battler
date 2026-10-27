@@ -101,7 +101,12 @@ public class BattleCamera : MonoBehaviour
         lookPoint = Vector3.SmoothDamp(lookPoint, lookTarget, ref lookVelocity, smoothTime);
 
         Vector3 direction = lookPoint - basePosition;
-        Quaternion rotation = direction.sqrMagnitude > 0.0001f ? Quaternion.LookRotation(direction) : transform.rotation;
+        Quaternion rotation;
+
+        if (direction.sqrMagnitude > 0.0001f)
+            rotation = Quaternion.LookRotation(direction);
+        else
+            rotation = transform.rotation;
 
         float time = Time.time * floatFrequency;
         Vector3 drift = rotation * GetNoise(time, 0f) * floatAmplitude;
@@ -120,8 +125,16 @@ public class BattleCamera : MonoBehaviour
     {
         UnitView view = views.FirstOrDefault(candidate => candidate.Unit == unit);
 
-        followed = unit.Team == Team.Player ? view : null;
-        watched = unit.Team == Team.Enemy ? view : null;
+        if (unit.Team == Team.Player)
+        {
+            followed = view;
+            watched = null;
+        }
+        else
+        {
+            followed = null;
+            watched = view;
+        }
     }
 
     private void OnBattleEnded(Team winner)

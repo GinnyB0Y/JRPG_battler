@@ -18,7 +18,17 @@ public class AbilityData : ScriptableObject
     [SerializeField] private bool requiresFrontTarget;
     [SerializeField, Min(0)] private int frontAttackPenalty;
 
-    public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
+    public string DisplayName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(displayName))
+                return name;
+            else
+                return displayName;
+        }
+    }
+
     public AbilityEffect Effect => effect;
     public AbilityVisual Visual => visual;
     public Projectile ProjectilePrefab => projectilePrefab;

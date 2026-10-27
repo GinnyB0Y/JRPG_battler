@@ -26,7 +26,18 @@ public class AiCommandSource : ICommandSource
     public async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
         await UniTask.Delay(thinkDelay, cancellationToken: cancellationToken);
-        return ChooseHeal(unit) ?? ChooseAttack(unit) ?? BattleAction.Skip(unit);
+
+        BattleAction heal = ChooseHeal(unit);
+
+        if (heal != null)
+            return heal;
+
+        BattleAction attack = ChooseAttack(unit);
+
+        if (attack != null)
+            return attack;
+        else
+            return BattleAction.Skip(unit);
     }
 
     private BattleAction ChooseHeal(BattleUnit unit)
@@ -57,6 +68,9 @@ public class AiCommandSource : ICommandSource
 
     private static float GetStunBonus(AbilityData ability, BattleUnit target)
     {
-        return ability.Stuns && !target.IsStunned ? StunScoreBonus : 0f;
+        if (ability.Stuns && !target.IsStunned)
+            return StunScoreBonus;
+        else
+            return 0f;
     }
 }

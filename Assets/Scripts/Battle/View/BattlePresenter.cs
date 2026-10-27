@@ -85,7 +85,10 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
         if (!outcome.IsHit)
             return target.PlayDodgeAsync(cancellationToken);
 
-        return outcome.IsHeal ? target.PlayHealAsync(cancellationToken) : target.PlayHitAsync(cancellationToken);
+        if (outcome.IsHeal)
+            return target.PlayHealAsync(cancellationToken);
+        else
+            return target.PlayHitAsync(cancellationToken);
     }
 
     private static Vector3 GetStrikePosition(UnitView user, UnitView target)
@@ -154,7 +157,10 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
         if (outcome.StunnedTarget)
             return $"-{outcome.Amount}\nОглушён";
 
-        return outcome.IsHeal ? $"+{outcome.Amount}" : $"-{outcome.Amount}";
+        if (outcome.IsHeal)
+            return $"+{outcome.Amount}";
+        else
+            return $"-{outcome.Amount}";
     }
 
     private static Color GetPopupColor(ActionOutcome outcome)
@@ -162,6 +168,9 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
         if (!outcome.IsHit)
             return MissColor;
 
-        return outcome.IsHeal ? HealColor : DamageColor;
+        if (outcome.IsHeal)
+            return HealColor;
+        else
+            return DamageColor;
     }
 }

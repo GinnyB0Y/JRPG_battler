@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class UnitData : ScriptableObject
@@ -7,10 +8,10 @@ public abstract class UnitData : ScriptableObject
     [SerializeField] private GameObject prefab;
 
     [Header("Stats")]
-    [SerializeField] private int maxHealth = 20;
-    [SerializeField] private int speed = 5;
-    [SerializeField] private int attack = 5;
-    [SerializeField] private int defense = 5;
+    [SerializeField] private int maxHealth;
+    [SerializeField] private int speed;
+    [SerializeField] private int attack;
+    [SerializeField] private int defense;
 
     [Header("Random Stats")]
     [SerializeField] private bool randomHP;
@@ -22,10 +23,22 @@ public abstract class UnitData : ScriptableObject
     [SerializeField] private bool randomDefense;
     [SerializeField] private Vector2Int maxDefenseRange;
 
-    [Header("Abilities")]
     [SerializeField] private AbilityData[] abilities;
+    [SerializeField] private AbilityData[] abilitiesPlus;
+    [SerializeField] private int abilityCounter;
+    [SerializeField, Range(0, 100)] private int abilityChance;
 
-    public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
+    public string DisplayName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(displayName))
+                return name;
+            else
+                return displayName;
+        }
+    }
+
     public GameObject Prefab => prefab;
     public int MaxHealth => maxHealth;
     public int Speed => speed;
@@ -34,6 +47,34 @@ public abstract class UnitData : ScriptableObject
     public IReadOnlyList<AbilityData> Abilities => abilities;
 
     public abstract UnitRole Role { get; }
+
+    public IReadOnlyList<AbilityData> RollAbilities(System.Random random)
+    {
+        List<AbilityData> result = new List<AbilityData>();
+
+        if (abilities != null)
+            result.AddRange(abilities.Where(ability => ability != null).Distinct());
+
+        if (abilitiesPlus == null)
+            return result;
+
+        List<AbilityData> extra = abilitiesPlus
+            .Where(ability => ability != null && !result.Contains(ability))
+            .Distinct()
+            .ToList();
+
+        for (int i = 0; i < abilityCounter && extra.Count > 0; i++)
+        {
+            if (random.Next(100) >= abilityChance)
+                continue;
+
+            int index = random.Next(extra.Count);
+            result.Add(extra[index]);
+            extra.RemoveAt(index);
+        }
+
+        return result;
+    }
 
     public UnitStats RollStats(System.Random random)
     {

@@ -5,10 +5,11 @@ public class BattleUnit
 {
     private readonly UnitStats stats;
 
-    public BattleUnit(UnitData data, UnitStats stats, Team team, int slot, BattleRow row)
+    public BattleUnit(UnitData data, UnitStats stats, IReadOnlyList<AbilityData> abilities, Team team, int slot, BattleRow row)
     {
         Data = data;
         this.stats = stats;
+        Abilities = abilities;
         Team = team;
         Slot = slot;
         Row = row;
@@ -31,7 +32,7 @@ public class BattleUnit
     public int Speed => stats.Speed;
     public int Attack => stats.Attack;
     public int Defense => stats.Defense;
-    public IReadOnlyList<AbilityData> Abilities => Data.Abilities;
+    public IReadOnlyList<AbilityData> Abilities { get; }
     public bool IsAlive => Health > 0;
     public bool IsStunned => IsAlive && StunnedTurns > 0;
     public int MissingHealth => MaxHealth - Health;
