@@ -22,14 +22,20 @@ public class Battlefield
         return GetTeam(team).Where(unit => unit.IsAlive);
     }
 
-    public BattleUnit GetFront(Team team)
+    public IEnumerable<BattleUnit> GetFrontLine(Team team)
     {
-        return GetAlive(team).OrderBy(unit => unit.Slot).FirstOrDefault();
+        List<BattleUnit> alive = GetAlive(team).ToList();
+
+        if (alive.Count == 0)
+            return alive;
+
+        BattleRow frontRow = alive.Min(unit => unit.Row);
+        return alive.Where(unit => unit.Row == frontRow);
     }
 
     public bool IsFront(BattleUnit unit)
     {
-        return unit.IsAlive && GetFront(unit.Team) == unit;
+        return unit.IsAlive && GetFrontLine(unit.Team).Contains(unit);
     }
 
     public bool TryGetWinner(out Team winner)

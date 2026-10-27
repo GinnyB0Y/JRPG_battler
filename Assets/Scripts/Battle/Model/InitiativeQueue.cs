@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,22 +26,31 @@ public class InitiativeQueue
             .ThenBy(unit => unit.Slot));
     }
 
-    public bool TryAdvance(out BattleUnit unit)
+    public bool TryPeekNext(out BattleUnit unit)
     {
-        while (nextIndex < order.Count)
-        {
-            BattleUnit candidate = order[nextIndex++];
-
-            if (candidate.IsAlive)
-            {
-                Current = candidate;
-                unit = candidate;
-                return true;
-            }
-        }
-
         Current = null;
-        unit = null;
-        return false;
+
+        while (nextIndex < order.Count && !order[nextIndex].IsAlive)
+            nextIndex++;
+
+        unit = nextIndex < order.Count ? order[nextIndex] : null;
+        return unit != null;
+    }
+
+    public IReadOnlyList<BattleUnit> GetCandidates(Team team)
+    {
+        return Upcoming.Where(unit => unit.Team == team).ToList();
+    }
+
+    public void Begin(BattleUnit unit)
+    {
+        int index = order.IndexOf(unit, nextIndex);
+
+        if (index < 0)
+            throw new ArgumentException($"{unit.Name} has already acted this round");
+
+        (order[nextIndex], order[index]) = (order[index], order[nextIndex]);
+        Current = unit;
+        nextIndex++;
     }
 }

@@ -45,7 +45,11 @@ public class BattleUI : MonoBehaviour, ICommandSource
     private UniTaskCompletionSource<int> pendingChoice;
     private BattleLoop loop;
     private CombatRules rules;
+    private UnitSelector selector;
     private string menuSceneName;
+
+    public event Action ActionChoiceStarted;
+    public event Action ActionChoiceEnded;
 
     private void Awake()
     {
@@ -79,18 +83,21 @@ public class BattleUI : MonoBehaviour, ICommandSource
             return;
 
         loop.RoundStarted -= OnRoundStarted;
+        loop.ActorChoiceStarted -= OnActorChoiceStarted;
         loop.TurnStarted -= OnTurnStarted;
         loop.ActionResolved -= OnActionResolved;
         loop.BattleEnded -= OnBattleEnded;
     }
 
-    public void Bind(BattleLoop battleLoop, CombatRules combatRules, Battlefield field, string menuScene)
+    public void Bind(BattleLoop battleLoop, CombatRules combatRules, Battlefield field, UnitSelector unitSelector, string menuScene)
     {
         loop = battleLoop;
         rules = combatRules;
+        selector = unitSelector;
         menuSceneName = menuScene;
 
         loop.RoundStarted += OnRoundStarted;
+        loop.ActorChoiceStarted += OnActorChoiceStarted;
         loop.TurnStarted += OnTurnStarted;
         loop.ActionResolved += OnActionResolved;
         loop.BattleEnded += OnBattleEnded;
@@ -99,19 +106,45 @@ public class BattleUI : MonoBehaviour, ICommandSource
         BindStatusViews(field.GetTeam(Team.Enemy), enemyStatusViews);
     }
 
+    public async UniTask<BattleUnit> ChooseActorAsync(IReadOnlyList<BattleUnit> candidates, CancellationToken cancellationToken)
+    {
+        choiceTitleText.text = "–í—ã–±–µ—Ä–∏—Ç–µ –ø–µ—Ä—Å–æ–Ω–∞–∂–∞ –¥–ª—è —Ö–æ–¥–∞";
+        ShowSlots(choiceButtons, 0);
+        choicePanel.SetActive(true);
+
+        try
+        {
+            return await selector.SelectActorAsync(candidates, cancellationToken);
+        }
+        finally
+        {
+            if (choicePanel != null)
+                choicePanel.SetActive(false);
+        }
+    }
+
     public async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
-        while (true)
+        ActionChoiceStarted?.Invoke();
+
+        try
         {
-            AbilityData ability = await ChooseAbilityAsync(unit, cancellationToken);
+            while (true)
+            {
+                AbilityData ability = await ChooseAbilityAsync(unit, cancellationToken);
 
-            if (ability == null)
-                return BattleAction.Skip(unit);
+                if (ability == null)
+                    return BattleAction.Skip(unit);
 
-            BattleUnit target = await ChooseTargetAsync(unit, ability, cancellationToken);
+                BattleUnit target = await ChooseTargetAsync(unit, ability, cancellationToken);
 
-            if (target != null)
-                return BattleAction.Use(unit, ability, target);
+                if (target != null)
+                    return BattleAction.Use(unit, ability, target);
+            }
+        }
+        finally
+        {
+            ActionChoiceEnded?.Invoke();
         }
     }
 
@@ -123,20 +156,23 @@ public class BattleUI : MonoBehaviour, ICommandSource
             .ToList();
         options.Add(new ChoiceOption("Skip", true));
 
-        int index = await ChooseAsync($"{unit.Name}: ‚˚·Ë‡ÂÚ ‰ÂÈÒÚ‚ËÂ", options, cancellationToken);
+        int index = await ChooseAsync($"{unit.Name}: –≤—ã–±–∏—Ä–∞–µ—Ç –¥–µ–π—Å—Ç–≤–∏–µ", options, cancellationToken);
         return index < abilities.Count ? abilities[index] : null;
     }
 
     private async UniTask<BattleUnit> ChooseTargetAsync(BattleUnit unit, AbilityData ability, CancellationToken cancellationToken)
     {
-        List<BattleUnit> targets = rules.GetTargets(unit, ability).ToList();
-        List<ChoiceOption> options = targets
-            .Select(target => new ChoiceOption(FormatTarget(unit, ability, target), true))
-            .ToList();
-        options.Add(new ChoiceOption("Back", true));
+        ChoiceOption[] options = { new ChoiceOption("Back", true) };
 
-        int index = await ChooseAsync($"{ability.DisplayName}: ‚˚·Ë‡ÂÚ ˆÂÎ¸", options, cancellationToken);
-        return index < targets.Count ? targets[index] : null;
+        using (CancellationTokenSource phase = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        {
+            (int winner, BattleUnit target, int _) = await UniTask.WhenAny(
+                selector.SelectTargetAsync(rules.GetTargets(unit, ability), phase.Token),
+                ChooseAsync($"{ability.DisplayName}: –≤—ã–±–∏—Ä–∞–µ—Ç —Ü–µ–ª—å", options, phase.Token));
+
+            phase.Cancel();
+            return winner == 0 ? target : null;
+        }
     }
 
     private async UniTask<int> ChooseAsync(string title, IReadOnlyList<ChoiceOption> options, CancellationToken cancellationToken)
@@ -164,7 +200,8 @@ public class BattleUI : MonoBehaviour, ICommandSource
         }
         finally
         {
-            pendingChoice = null;
+            if (pendingChoice == completion)
+                pendingChoice = null;
 
             if (choicePanel != null)
                 choicePanel.SetActive(false);
@@ -191,8 +228,14 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
     private void OnRoundStarted(int round)
     {
-        AddLog($"<b>–‡ÛÌ‰ {round}</b>");
+        AddLog($"<b>–†–∞—É–Ω–¥ {round}</b>");
         RefreshQueue();
+    }
+
+    private void OnActorChoiceStarted(Team team)
+    {
+        RefreshQueue();
+        HighlightStatus(null);
     }
 
     private void OnTurnStarted(BattleUnit unit)
@@ -206,7 +249,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
         AddLog(Describe(outcome));
 
         if (outcome.KilledTarget)
-            AddLog($"{Colored(outcome.Target)} ÛÏ˝");
+            AddLog($"{Colored(outcome.Target)} —É–º—ç—Ä");
 
         RefreshQueue();
     }
@@ -218,7 +261,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
         AddLog(isVictory ? "<b>Victory</b>" : "<b>Defeat</b>");
         HighlightStatus(null);
         ShowSlots(queueSlots, 0);
-        resultText.text = isVictory ? "œŒ¡≈ƒ¿" : "œŒ–¿∆≈Õ»≈";
+        resultText.text = isVictory ? "–ü–û–ë–ï–î–ê" : "–ü–û–†–ê–ñ–ï–ù–ò–ï";
         resultText.color = isVictory ? victoryColor : defeatColor;
         resultPanel.SetActive(true);
     }
@@ -260,30 +303,19 @@ public class BattleUI : MonoBehaviour, ICommandSource
         string user = Colored(outcome.User);
 
         if (outcome.IsSkip)
-            return $"{user} ÔÓÔÛÒÍ‡ÂÚ ıÓ‰";
+            return $"{user} –ø—Ä–æ–ø—É—Å–∫–∞–µ—Ç —Ö–æ–¥";
 
         string target = Colored(outcome.Target);
         string ability = outcome.Ability.DisplayName;
 
         if (outcome.IsHeal)
-            return $"{user} ËÒÔÓÎ¸ÁÛÂÚ {ability} Ì‡ {target}: +{outcome.Amount} HP";
+            return $"{user} –∏—Å–ø–æ–ª—å–∑—É–µ—Ç {ability} –Ω–∞ {target}: +{outcome.Amount} HP";
 
         int chance = Mathf.RoundToInt(outcome.HitChance * 100f);
 
         return outcome.IsHit
-            ? $"{user} ÔÓÔ‡‰‡ÂÚ ÔÓ {target} Ò {ability}: -{outcome.Amount} HP ({chance}%)"
-            : $"{user} ÔÓÏ‡ıË‚‡ÂÚÒˇ ÔÓ {target} Ò {ability} ({chance}%)";
-    }
-
-    private string FormatTarget(BattleUnit user, AbilityData ability, BattleUnit target)
-    {
-        string text = $"{target.Name}\n{target.Health}/{target.MaxHealth} HP";
-
-        if (ability.Effect != AbilityEffect.Damage)
-            return text;
-
-        int chance = Mathf.RoundToInt(rules.GetHitChance(user, ability, target) * 100f);
-        return $"{text}  {chance}%";
+            ? $"{user} –ø–æ–ø–∞–¥–∞–µ—Ç –ø–æ {target} —Å {ability}: -{outcome.Amount} HP ({chance}%)"
+            : $"{user} –ø—Ä–æ–º–∞—Ö–∏–≤–∞–µ—Ç—Å—è –ø–æ {target} —Å {ability} ({chance}%)";
     }
 
     private static string Colored(BattleUnit unit)

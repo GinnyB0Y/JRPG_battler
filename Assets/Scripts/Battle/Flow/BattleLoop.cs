@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -28,6 +29,7 @@ public class BattleLoop
     }
 
     public event Action<int> RoundStarted;
+    public event Action<Team> ActorChoiceStarted;
     public event Action<BattleUnit> TurnStarted;
     public event Action<ActionOutcome> ActionResolved;
     public event Action<Team> BattleEnded;
@@ -52,20 +54,32 @@ public class BattleLoop
         queue.StartRound(field.Units);
         RoundStarted?.Invoke(queue.Round);
 
-        while (!field.TryGetWinner(out _) && queue.TryAdvance(out BattleUnit unit))
-            await PlayTurnAsync(unit, cancellationToken);
+        while (!field.TryGetWinner(out _) && queue.TryPeekNext(out BattleUnit next))
+            await PlayTurnAsync(next, cancellationToken);
     }
 
-    private async UniTask PlayTurnAsync(BattleUnit unit, CancellationToken cancellationToken)
+    private async UniTask PlayTurnAsync(BattleUnit next, CancellationToken cancellationToken)
     {
+        ICommandSource commands = next.Team == Team.Player ? playerCommands : enemyCommands;
+        IReadOnlyList<BattleUnit> candidates = queue.GetCandidates(next.Team);
+
+        ActorChoiceStarted?.Invoke(next.Team);
+        BattleUnit unit = await commands.ChooseActorAsync(candidates, cancellationToken);
+
+        if (!candidates.Contains(unit))
+        {
+            Debug.LogWarning($"{unit?.Name} cannot act now, {next.Name} takes the turn");
+            unit = next;
+        }
+
+        queue.Begin(unit);
         TurnStarted?.Invoke(unit);
 
-        ICommandSource commands = unit.Team == Team.Player ? playerCommands : enemyCommands;
         BattleAction action = await commands.ChooseActionAsync(unit, cancellationToken);
 
         if (!rules.IsValid(action))
         {
-            Debug.LogWarning($"{unit.Name} âûáðàë ÷¸ò íå òî");
+            Debug.LogWarning($"{unit.Name} Ð²Ñ‹Ð±Ñ€Ð°Ð» Ñ‡Ñ‘Ñ‚ Ð½Ðµ Ñ‚Ð¾");
             action = BattleAction.Skip(unit);
         }
 

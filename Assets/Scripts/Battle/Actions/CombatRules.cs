@@ -33,11 +33,7 @@ public class CombatRules
     {
         Team side = ability.TargetSide == TargetSide.Enemy ? user.Team.Opposite() : user.Team;
 
-        if (!ability.RequiresFrontTarget)
-            return field.GetAlive(side);
-
-        BattleUnit front = field.GetFront(side);
-        return front == null ? Enumerable.Empty<BattleUnit>() : new[] { front };
+        return ability.RequiresFrontTarget ? field.GetFrontLine(side) : field.GetAlive(side);
     }
 
     public bool IsValid(BattleAction action)

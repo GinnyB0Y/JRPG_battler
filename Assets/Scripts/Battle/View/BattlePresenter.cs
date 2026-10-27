@@ -12,66 +12,22 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     private const float ReturnDuration = 0.3f;
     private const float PopupDuration = 0.7f;
     private const float PopupRise = 1f;
-    private const float MarkerBobHeight = 0.3f;
-    private const float MarkerBobDuration = 0.6f;
-    private const float MarkerSpinDuration = 2f;
 
     private static readonly Color DamageColor = new Color(1f, 0.35f, 0.3f);
     private static readonly Color HealColor = new Color(0.4f, 1f, 0.45f);
     private static readonly Color MissColor = new Color(0.85f, 0.85f, 0.85f);
 
     private readonly Dictionary<BattleUnit, UnitView> views = new Dictionary<BattleUnit, UnitView>();
-    private BattleLoop loop;
     private Camera mainCamera;
-    private Transform activeMarker;
 
     private void Awake()
     {
         mainCamera = Camera.main;
     }
 
-    public void CreateActiveMarker(GameObject prefab)
-    {
-        activeMarker = new GameObject("ActiveMarker").transform;
-        activeMarker.SetParent(transform, false);
-        activeMarker.gameObject.SetActive(false);
-
-        Transform marker = Instantiate(prefab, activeMarker).transform;
-        marker.localPosition = Vector3.zero;
-        marker.localRotation = Quaternion.identity;
-
-        marker
-            .DOLocalMoveY(MarkerBobHeight, MarkerBobDuration)
-            .SetEase(Ease.InOutSine)
-            .SetLoops(-1, LoopType.Yoyo)
-            .SetLink(marker.gameObject);
-
-        marker
-            .DOLocalRotate(new Vector3(0f, 360f, 0f), MarkerSpinDuration, RotateMode.FastBeyond360)
-            .SetEase(Ease.Linear)
-            .SetLoops(-1, LoopType.Restart)
-            .SetLink(marker.gameObject);
-    }
-
     public void Register(UnitView view)
     {
         views.Add(view.Unit, view);
-    }
-
-    public void Bind(BattleLoop battleLoop)
-    {
-        loop = battleLoop;
-        loop.TurnStarted += OnTurnStarted;
-        loop.BattleEnded += OnBattleEnded;
-    }
-
-    private void OnDestroy()
-    {
-        if (loop == null)
-            return;
-
-        loop.TurnStarted -= OnTurnStarted;
-        loop.BattleEnded -= OnBattleEnded;
     }
 
     public UniTask PlayActionStartAsync(ActionOutcome outcome, CancellationToken cancellationToken)
@@ -187,7 +143,7 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     private static string GetPopupText(ActionOutcome outcome)
     {
         if (!outcome.IsHit)
-            return "Промах";
+            return "РџСЂРѕРјР°С…";
 
         return outcome.IsHeal ? $"+{outcome.Amount}" : $"-{outcome.Amount}";
     }
@@ -198,22 +154,5 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
             return MissColor;
 
         return outcome.IsHeal ? HealColor : DamageColor;
-    }
-
-    private void OnTurnStarted(BattleUnit activeUnit)
-    {
-        if (activeMarker == null)
-            return;
-
-        UnitView activeView = views[activeUnit];
-        activeMarker.SetParent(activeView.transform, false);
-        activeMarker.localPosition = Vector3.up * activeView.MarkerHeight;
-        activeMarker.gameObject.SetActive(true);
-    }
-
-    private void OnBattleEnded(Team winner)
-    {
-        if (activeMarker != null)
-            activeMarker.gameObject.SetActive(false);
     }
 }

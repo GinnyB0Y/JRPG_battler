@@ -17,6 +17,11 @@ public class AiCommandSource : ICommandSource
         this.thinkDelay = thinkDelay;
     }
 
+    public UniTask<BattleUnit> ChooseActorAsync(IReadOnlyList<BattleUnit> candidates, CancellationToken cancellationToken)
+    {
+        return UniTask.FromResult(candidates[0]);
+    }
+
     public async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
         await UniTask.Delay(thinkDelay, cancellationToken: cancellationToken);

@@ -14,6 +14,10 @@ public class BattleCamera : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float followStrength;
     [SerializeField] private Transform enemyTurnPoint;
 
+    [Header("Player Choice")]
+    [SerializeField] private Transform choicePoint;
+    [SerializeField] private Transform choiceLookPoint;
+
     [Header("Floating")]
     [SerializeField, Min(0f)] private float floatAmplitude;
     [SerializeField, Min(0f)] private float floatFrequency;
@@ -22,6 +26,8 @@ public class BattleCamera : MonoBehaviour
     private readonly List<UnitView> views = new List<UnitView>();
 
     private BattleLoop loop;
+    private BattleUI battleUI;
+    private bool isChoosing;
     private UnitView followed;
     private UnitView watched;
     private Vector3 forward;
@@ -38,11 +44,16 @@ public class BattleCamera : MonoBehaviour
         noiseSeed = Random.Range(0f, 100f);
     }
 
-    public void Bind(BattleLoop battleLoop, IEnumerable<UnitView> unitViews)
+    public void Bind(BattleLoop battleLoop, BattleUI ui, IEnumerable<UnitView> unitViews)
     {
         loop = battleLoop;
+        loop.ActorChoiceStarted += OnActorChoiceStarted;
         loop.TurnStarted += OnTurnStarted;
         loop.BattleEnded += OnBattleEnded;
+
+        battleUI = ui;
+        battleUI.ActionChoiceStarted += OnActionChoiceStarted;
+        battleUI.ActionChoiceEnded += OnActionChoiceEnded;
 
         views.AddRange(unitViews);
         lookPoint = GetTeamFocus();
@@ -55,8 +66,11 @@ public class BattleCamera : MonoBehaviour
         if (loop == null)
             return;
 
+        loop.ActorChoiceStarted -= OnActorChoiceStarted;
         loop.TurnStarted -= OnTurnStarted;
         loop.BattleEnded -= OnBattleEnded;
+        battleUI.ActionChoiceStarted -= OnActionChoiceStarted;
+        battleUI.ActionChoiceEnded -= OnActionChoiceEnded;
     }
 
     private void LateUpdate()
@@ -67,7 +81,12 @@ public class BattleCamera : MonoBehaviour
         Vector3 lookTarget;
         Vector3 positionTarget;
 
-        if (watched != null && enemyTurnPoint != null)
+        if (isChoosing && choicePoint != null && choiceLookPoint != null)
+        {
+            lookTarget = choiceLookPoint.position;
+            positionTarget = choicePoint.position;
+        }
+        else if (watched != null && enemyTurnPoint != null)
         {
             lookTarget = watched.transform.position + focusOffset;
             positionTarget = enemyTurnPoint.position;
@@ -91,6 +110,12 @@ public class BattleCamera : MonoBehaviour
         transform.SetPositionAndRotation(basePosition + drift, rotation * sway);
     }
 
+    private void OnActorChoiceStarted(Team team)
+    {
+        followed = null;
+        watched = null;
+    }
+
     private void OnTurnStarted(BattleUnit unit)
     {
         UnitView view = views.FirstOrDefault(candidate => candidate.Unit == unit);
@@ -103,6 +128,17 @@ public class BattleCamera : MonoBehaviour
     {
         followed = null;
         watched = null;
+        isChoosing = false;
+    }
+
+    private void OnActionChoiceStarted()
+    {
+        isChoosing = true;
+    }
+
+    private void OnActionChoiceEnded()
+    {
+        isChoosing = false;
     }
 
     private Vector3 GetTeamFocus()

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 public class BattleUnit
 {
-    public BattleUnit(UnitData data, Team team, int slot)
+    public BattleUnit(UnitData data, Team team, int slot, BattleRow row)
     {
         Data = data;
         Team = team;
         Slot = slot;
+        Row = row;
         Name = $"{data.DisplayName} {slot + 1}";
         Health = data.MaxHealth;
     }
@@ -17,6 +18,7 @@ public class BattleUnit
     public UnitData Data { get; }
     public Team Team { get; }
     public int Slot { get; }
+    public BattleRow Row { get; }
     public string Name { get; }
     public int Health { get; private set; }
 
