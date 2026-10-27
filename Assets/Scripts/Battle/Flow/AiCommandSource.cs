@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
@@ -16,11 +14,6 @@ public class AiCommandSource : ICommandSource
     {
         this.rules = rules;
         this.thinkDelay = thinkDelay;
-    }
-
-    public UniTask<BattleUnit> ChooseActorAsync(IReadOnlyList<BattleUnit> candidates, CancellationToken cancellationToken)
-    {
-        return UniTask.FromResult(candidates[0]);
     }
 
     public async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
@@ -42,28 +35,60 @@ public class AiCommandSource : ICommandSource
 
     private BattleAction ChooseHeal(BattleUnit unit)
     {
-        IEnumerable<BattleAction> options =
-            from ability in unit.Abilities
-            where ability.Effect == AbilityEffect.Heal && rules.CanUse(unit, ability)
-            from target in rules.GetTargets(unit, ability)
-            where target.HealthRatio < HealThreshold
-            orderby target.HealthRatio, ability.Power descending
-            select BattleAction.Use(unit, ability, target);
+        BattleAction best = null;
+        float bestRatio = HealThreshold;
+        int bestPower = 0;
 
-        return options.FirstOrDefault();
+        foreach (AbilityData ability in unit.Abilities)
+        {
+            if (ability.Effect != AbilityEffect.Heal || !rules.CanUse(unit, ability))
+                continue;
+
+            foreach (BattleUnit target in rules.GetTargets(unit, ability))
+            {
+                bool isBetter = target.HealthRatio < bestRatio
+                    || (target.HealthRatio == bestRatio && ability.Power > bestPower);
+
+                if (isBetter)
+                {
+                    best = BattleAction.Use(unit, ability, target);
+                    bestRatio = target.HealthRatio;
+                    bestPower = ability.Power;
+                }
+            }
+        }
+
+        return best;
     }
 
     private BattleAction ChooseAttack(BattleUnit unit)
     {
-        IEnumerable<BattleAction> options =
-            from ability in unit.Abilities
-            where ability.Effect == AbilityEffect.Damage && rules.CanUse(unit, ability)
-            from target in rules.GetTargets(unit, ability)
-            let score = rules.GetHitChance(unit, ability, target) * (ability.Power + GetStunBonus(ability, target))
-            orderby score descending, target.Health
-            select BattleAction.Use(unit, ability, target);
+        BattleAction best = null;
+        float bestScore = 0f;
+        int bestHealth = 0;
 
-        return options.FirstOrDefault();
+        foreach (AbilityData ability in unit.Abilities)
+        {
+            if (ability.Effect != AbilityEffect.Damage || !rules.CanUse(unit, ability))
+                continue;
+
+            foreach (BattleUnit target in rules.GetTargets(unit, ability))
+            {
+                float score = rules.GetHitChance(unit, ability, target) * (ability.Power + GetStunBonus(ability, target));
+                bool isBetter = best == null
+                    || score > bestScore
+                    || (score == bestScore && target.Health < bestHealth);
+
+                if (isBetter)
+                {
+                    best = BattleAction.Use(unit, ability, target);
+                    bestScore = score;
+                    bestHealth = target.Health;
+                }
+            }
+        }
+
+        return best;
     }
 
     private static float GetStunBonus(AbilityData ability, BattleUnit target)

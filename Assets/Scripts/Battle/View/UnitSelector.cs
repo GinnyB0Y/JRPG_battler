@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -19,7 +18,6 @@ public class UnitSelector : MonoBehaviour
 
     private Camera mainCamera;
     private Transform activeMarker;
-    private UnitIndicator hoverIndicator;
     private UnitIndicator targetIndicator;
     private BattleLoop loop;
 
@@ -28,12 +26,11 @@ public class UnitSelector : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void Init(IEnumerable<UnitView> unitViews, GameObject activeMarkerPrefab, Transform hoverMarker, Transform targetMarker)
+    public void Init(IEnumerable<UnitView> unitViews, GameObject activeMarkerPrefab, Transform targetMarker)
     {
         foreach (UnitView view in unitViews)
             views.Add(view.Unit, view);
 
-        hoverIndicator = new UnitIndicator(hoverMarker);
         targetIndicator = new UnitIndicator(targetMarker);
 
         if (activeMarkerPrefab != null)
@@ -43,7 +40,6 @@ public class UnitSelector : MonoBehaviour
     public void Bind(BattleLoop battleLoop)
     {
         loop = battleLoop;
-        loop.ActorChoiceStarted += OnActorChoiceStarted;
         loop.TurnStarted += OnTurnStarted;
         loop.BattleEnded += OnBattleEnded;
     }
@@ -53,44 +49,11 @@ public class UnitSelector : MonoBehaviour
         if (loop == null)
             return;
 
-        loop.ActorChoiceStarted -= OnActorChoiceStarted;
         loop.TurnStarted -= OnTurnStarted;
         loop.BattleEnded -= OnBattleEnded;
     }
 
-    public async UniTask<BattleUnit> SelectActorAsync(IEnumerable<BattleUnit> candidates, CancellationToken cancellationToken)
-    {
-        List<BattleUnit> actors = candidates.ToList();
-        BattleUnit actor = await PickAsync(actors, actors.Contains, hoverIndicator, cancellationToken);
-        hoverIndicator.ReturnHome();
-        return actor;
-    }
-
-    public UniTask<BattleUnit> SelectTargetAsync(IEnumerable<BattleUnit> targets, CancellationToken cancellationToken)
-    {
-        List<BattleUnit> candidates = targets.ToList();
-        return PickAsync(candidates, candidates.Contains, targetIndicator, cancellationToken);
-    }
-
-    public async UniTask<BattleUnit> WaitForClickAsync(BattleUnit unit, CancellationToken cancellationToken)
-    {
-        while (true)
-        {
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
-
-            if (Time.timeScale <= 0f)
-                continue;
-
-            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && GetPointedUnit() == unit)
-                return unit;
-        }
-    }
-
-    private async UniTask<BattleUnit> PickAsync(
-        IReadOnlyCollection<BattleUnit> hoverable,
-        Func<BattleUnit, bool> canPick,
-        UnitIndicator indicator,
-        CancellationToken cancellationToken)
+    public async UniTask<BattleUnit> SelectTargetAsync(List<BattleUnit> targets, CancellationToken cancellationToken)
     {
         BattleUnit hovered = null;
 
@@ -106,7 +69,7 @@ public class UnitSelector : MonoBehaviour
                 BattleUnit pointed = GetPointedUnit();
                 BattleUnit next;
 
-                if (pointed != null && hoverable.Contains(pointed))
+                if (pointed != null && targets.Contains(pointed))
                     next = pointed;
                 else
                     next = null;
@@ -116,18 +79,18 @@ public class UnitSelector : MonoBehaviour
                     hovered = next;
 
                     if (hovered != null)
-                        indicator.MoveTo(views[hovered]);
+                        targetIndicator.MoveTo(views[hovered]);
                     else
-                        indicator.ReturnHome();
+                        targetIndicator.ReturnHome();
                 }
 
-                if (hovered != null && canPick(hovered) && Mouse.current.leftButton.wasPressedThisFrame)
+                if (hovered != null && Mouse.current.leftButton.wasPressedThisFrame)
                     return hovered;
             }
         }
         catch (OperationCanceledException)
         {
-            indicator.ReturnHome();
+            targetIndicator.ReturnHome();
             throw;
         }
     }
@@ -193,21 +156,14 @@ public class UnitSelector : MonoBehaviour
             activeMarker.gameObject.SetActive(false);
     }
 
-    private void OnActorChoiceStarted(Team team)
-    {
-        hoverIndicator.ReturnHome();
-        targetIndicator.ReturnHome();
-        HideActiveMarker();
-    }
-
     private void OnTurnStarted(BattleUnit unit)
     {
+        targetIndicator.ReturnHome();
         ShowActiveMarker(unit);
     }
 
     private void OnBattleEnded(Team winner)
     {
-        hoverIndicator.ReturnHome();
         targetIndicator.ReturnHome();
         HideActiveMarker();
     }

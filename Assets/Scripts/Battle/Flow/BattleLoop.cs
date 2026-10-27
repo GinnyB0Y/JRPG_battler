@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -14,12 +13,7 @@ public class BattleLoop
     private readonly IBattlePresenter presenter;
     private readonly InitiativeQueue queue = new InitiativeQueue();
 
-    public BattleLoop(
-        Battlefield field,
-        CombatRules rules,
-        ICommandSource playerCommands,
-        ICommandSource enemyCommands,
-        IBattlePresenter presenter)
+    public BattleLoop(Battlefield field, CombatRules rules, ICommandSource playerCommands, ICommandSource enemyCommands, IBattlePresenter presenter)
     {
         this.field = field;
         this.rules = rules;
@@ -29,14 +23,17 @@ public class BattleLoop
     }
 
     public event Action<int> RoundStarted;
-    public event Action<Team> ActorChoiceStarted;
     public event Action<BattleUnit> TurnStarted;
     public event Action<ActionOutcome> ActionResolved;
     public event Action<Team> BattleEnded;
 
     public int Round => queue.Round;
     public BattleUnit ActiveUnit => queue.Current;
-    public IEnumerable<BattleUnit> UpcomingUnits => queue.Upcoming;
+
+    public List<BattleUnit> GetUpcomingUnits()
+    {
+        return queue.GetUpcoming();
+    }
 
     public async UniTask<Team> RunAsync(CancellationToken cancellationToken)
     {
@@ -54,46 +51,25 @@ public class BattleLoop
         queue.StartRound(field.Units);
         RoundStarted?.Invoke(queue.Round);
 
-        while (!field.TryGetWinner(out _) && queue.TryPeekNext(out BattleUnit next))
-            await PlayTurnAsync(next, cancellationToken);
+        while (!field.TryGetWinner(out _) && queue.TryGetNext(out BattleUnit unit))
+            await PlayTurnAsync(unit, cancellationToken);
     }
 
-    private async UniTask PlayTurnAsync(BattleUnit next, CancellationToken cancellationToken)
+    private async UniTask PlayTurnAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
-        ICommandSource commands;
+        TurnStarted?.Invoke(unit);
 
-        if (next.Team == Team.Player)
-            commands = playerCommands;
-        else
-            commands = enemyCommands;
+        BattleAction action;
 
-        BattleAction action = null;
-
-        while (action == null)
+        if (unit.IsStunned)
         {
-            ActorChoiceStarted?.Invoke(next.Team);
-
-            BattleUnit unit;
-
-            if (next.IsStunned)
-                unit = next;
-            else
-                unit = await ChooseActorAsync(commands, next, cancellationToken);
-
-            queue.Begin(unit);
-            TurnStarted?.Invoke(unit);
-
-            if (unit.IsStunned)
-                action = BattleAction.Stunned(unit);
-            else
-                action = await ChooseActionAsync(commands, unit, cancellationToken);
-
-            if (action == null)
-                queue.CancelBegin();
+            action = BattleAction.Stunned(unit);
+            unit.SpendStunnedTurn();
         }
-
-        if (action.IsStunned)
-            action.User.SpendStunnedTurn();
+        else
+        {
+            action = await ChooseActionAsync(unit, cancellationToken);
+        }
 
         ActionOutcome outcome = rules.Resolve(action);
 
@@ -104,27 +80,16 @@ public class BattleLoop
         await presenter.PlayActionEndAsync(outcome, cancellationToken);
     }
 
-    private async UniTask<BattleUnit> ChooseActorAsync(ICommandSource commands, BattleUnit next, CancellationToken cancellationToken)
+    private async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
-        IReadOnlyList<BattleUnit> candidates = queue.GetCandidates(next.Team)
-            .Where(candidate => !candidate.IsStunned)
-            .ToList();
+        ICommandSource commands;
 
-        BattleUnit unit = await commands.ChooseActorAsync(candidates, cancellationToken);
+        if (unit.Team == Team.Player)
+            commands = playerCommands;
+        else
+            commands = enemyCommands;
 
-        if (candidates.Contains(unit))
-            return unit;
-
-        Debug.LogWarning($"{unit?.Name} cannot act now, {next.Name} takes the turn");
-        return next;
-    }
-
-    private async UniTask<BattleAction> ChooseActionAsync(ICommandSource commands, BattleUnit unit, CancellationToken cancellationToken)
-    {
         BattleAction action = await commands.ChooseActionAsync(unit, cancellationToken);
-
-        if (action == null)
-            return null;
 
         if (rules.IsValid(action))
             return action;

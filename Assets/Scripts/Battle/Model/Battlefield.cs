@@ -1,36 +1,66 @@
 using System.Collections.Generic;
-using System.Linq;
 
 public class Battlefield
 {
     private readonly List<BattleUnit> units;
 
-    public Battlefield(IEnumerable<BattleUnit> units)
+    public Battlefield(List<BattleUnit> units)
     {
-        this.units = units.ToList();
+        this.units = new List<BattleUnit>(units);
     }
 
     public IReadOnlyList<BattleUnit> Units => units;
 
-    public IEnumerable<BattleUnit> GetTeam(Team team)
+    public List<BattleUnit> GetTeam(Team team)
     {
-        return units.Where(unit => unit.Team == team);
+        List<BattleUnit> result = new List<BattleUnit>();
+
+        foreach (BattleUnit unit in units)
+        {
+            if (unit.Team == team)
+                result.Add(unit);
+        }
+
+        return result;
     }
 
-    public IEnumerable<BattleUnit> GetAlive(Team team)
+    public List<BattleUnit> GetAlive(Team team)
     {
-        return GetTeam(team).Where(unit => unit.IsAlive);
+        List<BattleUnit> result = new List<BattleUnit>();
+
+        foreach (BattleUnit unit in units)
+        {
+            if (unit.Team == team && unit.IsAlive)
+                result.Add(unit);
+        }
+
+        return result;
     }
 
-    public IEnumerable<BattleUnit> GetFrontLine(Team team)
+    public List<BattleUnit> GetFrontLine(Team team)
     {
-        List<BattleUnit> alive = GetAlive(team).ToList();
+        List<BattleUnit> alive = GetAlive(team);
 
         if (alive.Count == 0)
             return alive;
 
-        BattleRow frontRow = alive.Min(unit => unit.Row);
-        return alive.Where(unit => unit.Row == frontRow);
+        BattleRow frontRow = alive[0].Row;
+
+        foreach (BattleUnit unit in alive)
+        {
+            if (unit.Row < frontRow)
+                frontRow = unit.Row;
+        }
+
+        List<BattleUnit> result = new List<BattleUnit>();
+
+        foreach (BattleUnit unit in alive)
+        {
+            if (unit.Row == frontRow)
+                result.Add(unit);
+        }
+
+        return result;
     }
 
     public bool IsFront(BattleUnit unit)
@@ -40,13 +70,13 @@ public class Battlefield
 
     public bool TryGetWinner(out Team winner)
     {
-        if (!GetAlive(Team.Enemy).Any())
+        if (GetAlive(Team.Enemy).Count == 0)
         {
             winner = Team.Player;
             return true;
         }
 
-        if (!GetAlive(Team.Player).Any())
+        if (GetAlive(Team.Player).Count == 0)
         {
             winner = Team.Enemy;
             return true;

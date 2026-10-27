@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -86,7 +85,12 @@ public class CreatureList : MonoBehaviour
 
     private void Save()
     {
-        BattleSettings.SetRoles(team, entries.Select(entry => entry.Role));
+        List<UnitRole> roles = new List<UnitRole>();
+
+        foreach (CreatureDropdown entry in entries)
+            roles.Add(entry.Role);
+
+        BattleSettings.SetRoles(team, roles);
         Refresh();
     }
 
