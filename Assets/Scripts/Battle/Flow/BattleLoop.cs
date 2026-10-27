@@ -67,27 +67,33 @@ public class BattleLoop
         else
             commands = enemyCommands;
 
-        ActorChoiceStarted?.Invoke(next.Team);
+        BattleAction action = null;
 
-        BattleUnit unit;
+        while (action == null)
+        {
+            ActorChoiceStarted?.Invoke(next.Team);
 
-        if (next.IsStunned)
-            unit = next;
-        else
-            unit = await ChooseActorAsync(commands, next, cancellationToken);
+            BattleUnit unit;
 
-        queue.Begin(unit);
-        TurnStarted?.Invoke(unit);
+            if (next.IsStunned)
+                unit = next;
+            else
+                unit = await ChooseActorAsync(commands, next, cancellationToken);
 
-        BattleAction action;
+            queue.Begin(unit);
+            TurnStarted?.Invoke(unit);
 
-        if (unit.IsStunned)
-            action = BattleAction.Stunned(unit);
-        else
-            action = await ChooseActionAsync(commands, unit, cancellationToken);
+            if (unit.IsStunned)
+                action = BattleAction.Stunned(unit);
+            else
+                action = await ChooseActionAsync(commands, unit, cancellationToken);
+
+            if (action == null)
+                queue.CancelBegin();
+        }
 
         if (action.IsStunned)
-            unit.SpendStunnedTurn();
+            action.User.SpendStunnedTurn();
 
         ActionOutcome outcome = rules.Resolve(action);
 
@@ -116,6 +122,9 @@ public class BattleLoop
     private async UniTask<BattleAction> ChooseActionAsync(ICommandSource commands, BattleUnit unit, CancellationToken cancellationToken)
     {
         BattleAction action = await commands.ChooseActionAsync(unit, cancellationToken);
+
+        if (action == null)
+            return null;
 
         if (rules.IsValid(action))
             return action;

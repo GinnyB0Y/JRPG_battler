@@ -12,6 +12,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
     private const string PlayerColor = "#6FB7FF";
     private const string EnemyColor = "#FF7A6F";
     private const string ActiveColor = "#FFD84D";
+    private const int ReselectActorChoice = -1;
 
     [Header("Turn Queue")]
     [SerializeField] private TMP_Text roundText;
@@ -127,14 +128,23 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
         try
         {
+            List<AbilityData> abilities = unit.Abilities.ToList();
+
             while (true)
             {
-                AbilityData ability = await ChooseAbilityAsync(unit, cancellationToken);
+                int choice = await ChooseAbilityAsync(unit, abilities, cancellationToken);
 
-                if (ability == null)
+                if (choice == ReselectActorChoice)
+                    return null;
+
+                if (choice >= abilities.Count)
                     return BattleAction.Skip(unit);
 
-                BattleUnit target = await ChooseTargetAsync(unit, ability, cancellationToken);
+                AbilityData ability = abilities[choice];
+                (bool reselectActor, BattleUnit target) = await ChooseTargetAsync(unit, ability, cancellationToken);
+
+                if (reselectActor)
+                    return null;
 
                 if (target != null)
                     return BattleAction.Use(unit, ability, target);
@@ -146,38 +156,55 @@ public class BattleUI : MonoBehaviour, ICommandSource
         }
     }
 
-    private async UniTask<AbilityData> ChooseAbilityAsync(BattleUnit unit, CancellationToken cancellationToken)
+    private async UniTask<int> ChooseAbilityAsync(BattleUnit unit, List<AbilityData> abilities, CancellationToken cancellationToken)
     {
-        List<AbilityData> abilities = unit.Abilities.ToList();
         List<ChoiceOption> options = abilities
             .Select(ability => new ChoiceOption(ability.DisplayName, rules.CanUse(unit, ability)))
             .ToList();
         options.Add(new ChoiceOption("Skip", true));
 
-        int index = await ChooseAsync($"{unit.Name}: выбирает действие", options, cancellationToken);
-
-        if (index < abilities.Count)
-            return abilities[index];
-        else
-            return null;
-    }
-
-    private async UniTask<BattleUnit> ChooseTargetAsync(BattleUnit unit, AbilityData ability, CancellationToken cancellationToken)
-    {
-        ChoiceOption[] options = { new ChoiceOption("Back", true) };
-
         using (CancellationTokenSource phase = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
         {
-            (int winner, BattleUnit target, int _) = await UniTask.WhenAny(
-                selector.SelectTargetAsync(rules.GetTargets(unit, ability), phase.Token),
-                ChooseAsync($"{ability.DisplayName}: выбирает цель", options, phase.Token));
+            (int winner, int index, BattleUnit _) = await UniTask.WhenAny(
+                ChooseAsync($"{unit.Name}: выбирает действие", options, phase.Token),
+                selector.WaitForClickAsync(unit, phase.Token));
 
             phase.Cancel();
 
             if (winner == 0)
-                return target;
+                return index;
             else
-                return null;
+                return ReselectActorChoice;
+        }
+    }
+
+    private async UniTask<(bool reselectActor, BattleUnit target)> ChooseTargetAsync(BattleUnit unit, AbilityData ability, CancellationToken cancellationToken)
+    {
+        ChoiceOption[] options = { new ChoiceOption("Back", true) };
+        List<BattleUnit> targets = rules.GetTargets(unit, ability).ToList();
+
+        using (CancellationTokenSource phase = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        {
+            UniTask<BattleUnit> actorClick;
+
+            if (targets.Contains(unit))
+                actorClick = UniTask.Never<BattleUnit>(phase.Token);
+            else
+                actorClick = selector.WaitForClickAsync(unit, phase.Token);
+
+            (int winner, BattleUnit target, int _, BattleUnit _) = await UniTask.WhenAny(
+                selector.SelectTargetAsync(targets, phase.Token),
+                ChooseAsync($"{ability.DisplayName}: выбирает цель", options, phase.Token),
+                actorClick);
+
+            phase.Cancel();
+
+            if (winner == 0)
+                return (false, target);
+            else if (winner == 2)
+                return (true, null);
+            else
+                return (false, null);
         }
     }
 

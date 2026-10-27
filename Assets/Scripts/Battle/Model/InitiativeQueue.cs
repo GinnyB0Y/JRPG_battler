@@ -6,6 +6,7 @@ public class InitiativeQueue
 {
     private readonly List<BattleUnit> order = new List<BattleUnit>();
     private int nextIndex;
+    private int begunIndex;
 
     public int Round { get; private set; }
     public BattleUnit Current { get; private set; }
@@ -55,6 +56,17 @@ public class InitiativeQueue
 
         (order[nextIndex], order[index]) = (order[index], order[nextIndex]);
         Current = unit;
+        begunIndex = index;
         nextIndex++;
+    }
+
+    public void CancelBegin()
+    {
+        if (Current == null)
+            throw new InvalidOperationException("No turn to cancel");
+
+        nextIndex--;
+        (order[nextIndex], order[begunIndex]) = (order[begunIndex], order[nextIndex]);
+        Current = null;
     }
 }

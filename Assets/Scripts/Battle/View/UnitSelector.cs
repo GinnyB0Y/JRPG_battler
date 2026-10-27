@@ -72,6 +72,20 @@ public class UnitSelector : MonoBehaviour
         return PickAsync(candidates, candidates.Contains, targetIndicator, cancellationToken);
     }
 
+    public async UniTask<BattleUnit> WaitForClickAsync(BattleUnit unit, CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+
+            if (Time.timeScale <= 0f)
+                continue;
+
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && GetPointedUnit() == unit)
+                return unit;
+        }
+    }
+
     private async UniTask<BattleUnit> PickAsync(
         IReadOnlyCollection<BattleUnit> hoverable,
         Func<BattleUnit, bool> canPick,
