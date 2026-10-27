@@ -17,8 +17,10 @@ public class ActionOutcome
     public BattleUnit Target => Action.Target;
     public AbilityData Ability => Action.Ability;
     public bool IsSkip => Action.IsSkip;
+    public bool IsStunSkip => Action.IsStunned;
     public bool IsHeal => !IsSkip && Ability.Effect == AbilityEffect.Heal;
     public bool KilledTarget => !IsSkip && IsHit && !Target.IsAlive;
+    public bool StunnedTarget => !IsSkip && IsHit && Ability.Stuns && Target.IsAlive;
 
     public static ActionOutcome Skipped(BattleAction action)
     {
@@ -34,5 +36,8 @@ public class ActionOutcome
             Target.Heal(Amount);
         else
             Target.TakeDamage(Amount);
+
+        if (StunnedTarget)
+            Target.Stun(Ability.StunTurns);
     }
 }

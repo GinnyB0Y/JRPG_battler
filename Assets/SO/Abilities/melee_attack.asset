@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f1c9a7e5b2d4e8f9a6b0c1d2e3f4a5b, type: 3}
-  m_Name: melee_strike
+  m_Name: melee_attack
   m_EditorClassIdentifier: 
   displayName: Strike
   effect: 0

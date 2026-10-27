@@ -61,27 +61,19 @@ public class BattleLoop
     private async UniTask PlayTurnAsync(BattleUnit next, CancellationToken cancellationToken)
     {
         ICommandSource commands = next.Team == Team.Player ? playerCommands : enemyCommands;
-        IReadOnlyList<BattleUnit> candidates = queue.GetCandidates(next.Team);
 
         ActorChoiceStarted?.Invoke(next.Team);
-        BattleUnit unit = await commands.ChooseActorAsync(candidates, cancellationToken);
-
-        if (!candidates.Contains(unit))
-        {
-            Debug.LogWarning($"{unit?.Name} cannot act now, {next.Name} takes the turn");
-            unit = next;
-        }
+        BattleUnit unit = next.IsStunned ? next : await ChooseActorAsync(commands, next, cancellationToken);
 
         queue.Begin(unit);
         TurnStarted?.Invoke(unit);
 
-        BattleAction action = await commands.ChooseActionAsync(unit, cancellationToken);
+        BattleAction action = unit.IsStunned
+            ? BattleAction.Stunned(unit)
+            : await ChooseActionAsync(commands, unit, cancellationToken);
 
-        if (!rules.IsValid(action))
-        {
-            Debug.LogWarning($"{unit.Name} выбрал чёт не то");
-            action = BattleAction.Skip(unit);
-        }
+        if (action.IsStunned)
+            unit.SpendStunnedTurn();
 
         ActionOutcome outcome = rules.Resolve(action);
 
@@ -90,5 +82,31 @@ public class BattleLoop
         ActionResolved?.Invoke(outcome);
         await presenter.PlayActionImpactAsync(outcome, cancellationToken);
         await presenter.PlayActionEndAsync(outcome, cancellationToken);
+    }
+
+    private async UniTask<BattleUnit> ChooseActorAsync(ICommandSource commands, BattleUnit next, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<BattleUnit> candidates = queue.GetCandidates(next.Team)
+            .Where(candidate => !candidate.IsStunned)
+            .ToList();
+
+        BattleUnit unit = await commands.ChooseActorAsync(candidates, cancellationToken);
+
+        if (candidates.Contains(unit))
+            return unit;
+
+        Debug.LogWarning($"{unit?.Name} cannot act now, {next.Name} takes the turn");
+        return next;
+    }
+
+    private async UniTask<BattleAction> ChooseActionAsync(ICommandSource commands, BattleUnit unit, CancellationToken cancellationToken)
+    {
+        BattleAction action = await commands.ChooseActionAsync(unit, cancellationToken);
+
+        if (rules.IsValid(action))
+            return action;
+
+        Debug.LogWarning($"{unit.Name} выбрал чёт не то");
+        return BattleAction.Skip(unit);
     }
 }

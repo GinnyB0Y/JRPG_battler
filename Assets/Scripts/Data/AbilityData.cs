@@ -9,6 +9,9 @@ public class AbilityData : ScriptableObject
     [SerializeField] private Projectile projectilePrefab;
     [SerializeField, Min(0)] private int power = 5;
 
+    [Header("Stun")]
+    [SerializeField, Min(0)] private int stunTurns;
+
     [Header("Targeting")]
     [SerializeField] private TargetSide targetSide;
     [SerializeField] private bool requiresFrontUser;
@@ -20,6 +23,8 @@ public class AbilityData : ScriptableObject
     public AbilityVisual Visual => visual;
     public Projectile ProjectilePrefab => projectilePrefab;
     public int Power => power;
+    public int StunTurns => stunTurns;
+    public bool Stuns => effect == AbilityEffect.Damage && stunTurns > 0;
     public TargetSide TargetSide => targetSide;
     public bool RequiresFrontUser => requiresFrontUser;
     public bool RequiresFrontTarget => requiresFrontTarget;

@@ -7,10 +7,20 @@ public abstract class UnitData : ScriptableObject
     [SerializeField] private GameObject prefab;
 
     [Header("Stats")]
-    [SerializeField, Min(1)] private int maxHealth = 20;
-    [SerializeField, Min(0)] private int speed = 5;
-    [SerializeField, Min(0)] private int attack = 5;
-    [SerializeField, Min(0)] private int defense = 5;
+    [SerializeField] private int maxHealth = 20;
+    [SerializeField] private int speed = 5;
+    [SerializeField] private int attack = 5;
+    [SerializeField] private int defense = 5;
+
+    [Header("Random Stats")]
+    [SerializeField] private bool randomHP;
+    [SerializeField] private Vector2Int maxHealthRange;
+    [SerializeField] private bool randomSpeed;
+    [SerializeField] private Vector2Int maxSpeedRange;
+    [SerializeField] private bool randomAttack;
+    [SerializeField] private Vector2Int maxAttackRange;
+    [SerializeField] private bool randomDefense;
+    [SerializeField] private Vector2Int maxDefenseRange;
 
     [Header("Abilities")]
     [SerializeField] private AbilityData[] abilities;
@@ -24,4 +34,23 @@ public abstract class UnitData : ScriptableObject
     public IReadOnlyList<AbilityData> Abilities => abilities;
 
     public abstract UnitRole Role { get; }
+
+    public UnitStats RollStats(System.Random random)
+    {
+        return new UnitStats(
+            Roll(maxHealth, randomHP, maxHealthRange, 1, random),
+            Roll(speed, randomSpeed, maxSpeedRange, 0, random),
+            Roll(attack, randomAttack, maxAttackRange, 0, random),
+            Roll(defense, randomDefense, maxDefenseRange, 0, random));
+    }
+
+    private static int Roll(int value, bool isRandom, Vector2Int range, int minValue, System.Random random)
+    {
+        if (!isRandom)
+            return Mathf.Max(minValue, value);
+
+        int min = Mathf.Max(minValue, Mathf.Min(range.x, range.y));
+        int max = Mathf.Max(min, Mathf.Max(range.x, range.y));
+        return random.Next(min, max + 1);
+    }
 }

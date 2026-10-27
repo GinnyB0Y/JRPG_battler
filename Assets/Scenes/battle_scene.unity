@@ -514,7 +514,7 @@ MonoBehaviour:
   targetMarker: {fileID: 5354738236084790647}
   battleUI: {fileID: 1677641084}
   battleCamera: {fileID: 330585548}
-  pauseMenu: {fileID: 0}
+  pauseMenu: {fileID: 1677641086}
 --- !u!4 &211241442
 Transform:
   m_ObjectHideFlags: 0

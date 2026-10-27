@@ -249,6 +249,9 @@ public class BattleUI : MonoBehaviour, ICommandSource
         if (outcome.KilledTarget)
             AddLog($"{Colored(outcome.Target)} умэр");
 
+        if (outcome.StunnedTarget)
+            AddLog($"{Colored(outcome.Target)} оглушён и пропустит следующий ход");
+
         RefreshQueue();
     }
 
@@ -299,6 +302,9 @@ public class BattleUI : MonoBehaviour, ICommandSource
     private string Describe(ActionOutcome outcome)
     {
         string user = Colored(outcome.User);
+
+        if (outcome.IsStunSkip)
+            return $"{user} оглушён и пропускает ход";
 
         if (outcome.IsSkip)
             return $"{user} пропускает ход";

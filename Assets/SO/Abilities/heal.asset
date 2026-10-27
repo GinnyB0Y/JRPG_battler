@@ -15,7 +15,9 @@ MonoBehaviour:
   displayName: Heal
   effect: 1
   visual: 2
+  projectilePrefab: {fileID: 0}
   power: 5
+  stunTurns: 0
   targetSide: 1
   requiresFrontUser: 0
   requiresFrontTarget: 0

@@ -12,12 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1708252740d69a04aad64bae91e8bc6a, type: 3}
   m_Name: player_data
   m_EditorClassIdentifier: 
-  displayName: 
+  displayName: "\u0438\u0433\u0440\u043E\u043A"
   prefab: {fileID: 5829696282010639952, guid: 43e4bd2dedb09d248b88bb5b44b9f70c, type: 3}
   maxHealth: 20
   speed: 5
   attack: 5
   defense: 5
+  randomHP: 0
+  maxHealthRange: {x: 15, y: 25}
+  randomSpeed: 0
+  maxSpeedRange: {x: 3, y: 7}
+  randomAttack: 0
+  maxAttackRange: {x: 3, y: 7}
+  randomDefense: 0
+  maxDefenseRange: {x: 3, y: 7}
   abilities:
   - {fileID: 11400000, guid: 7a1e3c5b9d2f4a6c8e0b1d3f5a7c9e21, type: 2}
   - {fileID: 11400000, guid: 7a1e3c5b9d2f4a6c8e0b1d3f5a7c9e22, type: 2}

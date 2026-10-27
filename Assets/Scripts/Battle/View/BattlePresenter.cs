@@ -16,6 +16,7 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     private static readonly Color DamageColor = new Color(1f, 0.35f, 0.3f);
     private static readonly Color HealColor = new Color(0.4f, 1f, 0.45f);
     private static readonly Color MissColor = new Color(0.85f, 0.85f, 0.85f);
+    private static readonly Color StunColor = new Color(1f, 0.85f, 0.3f);
 
     private readonly Dictionary<BattleUnit, UnitView> views = new Dictionary<BattleUnit, UnitView>();
     private Camera mainCamera;
@@ -33,6 +34,11 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     public UniTask PlayActionStartAsync(ActionOutcome outcome, CancellationToken cancellationToken)
     {
         UnitView user = views[outcome.User];
+
+        if (outcome.IsStunSkip)
+            return UniTask.WhenAll(
+                user.PlayHitAsync(cancellationToken),
+                ShowPopupAsync(user.BodyPosition + Vector3.up, "Оглушён", StunColor, cancellationToken));
 
         if (outcome.IsSkip)
             return user.HopAsync(cancellationToken);
@@ -144,6 +150,9 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     {
         if (!outcome.IsHit)
             return "Промах";
+
+        if (outcome.StunnedTarget)
+            return $"-{outcome.Amount}\nОглушён";
 
         return outcome.IsHeal ? $"+{outcome.Amount}" : $"-{outcome.Amount}";
     }

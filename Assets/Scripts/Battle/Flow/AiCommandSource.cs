@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 public class AiCommandSource : ICommandSource
 {
     private const float HealThreshold = 0.5f;
+    private const float StunScoreBonus = 4f;
 
     private readonly CombatRules rules;
     private readonly TimeSpan thinkDelay;
@@ -47,10 +48,15 @@ public class AiCommandSource : ICommandSource
             from ability in unit.Abilities
             where ability.Effect == AbilityEffect.Damage && rules.CanUse(unit, ability)
             from target in rules.GetTargets(unit, ability)
-            let expectedDamage = rules.GetHitChance(unit, ability, target) * ability.Power
-            orderby expectedDamage descending, target.Health
+            let score = rules.GetHitChance(unit, ability, target) * (ability.Power + GetStunBonus(ability, target))
+            orderby score descending, target.Health
             select BattleAction.Use(unit, ability, target);
 
         return options.FirstOrDefault();
+    }
+
+    private static float GetStunBonus(AbilityData ability, BattleUnit target)
+    {
+        return ability.Stuns && !target.IsStunned ? StunScoreBonus : 0f;
     }
 }

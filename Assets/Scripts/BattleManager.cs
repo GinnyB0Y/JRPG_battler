@@ -155,7 +155,7 @@ public class BattleManager : MonoBehaviour
     private void Spawn(UnitData data, Team side, int slot, BattleRow row, Transform position)
     {
         GameObject instance = Instantiate(data.Prefab, position.position, position.rotation, transform);
-        BattleUnit unit = new BattleUnit(data, side, slot, row);
+        BattleUnit unit = new BattleUnit(data, data.RollStats(teamRandom), side, slot, row);
         units.Add(unit);
 
         UnitView view = instance.AddComponent<UnitView>();

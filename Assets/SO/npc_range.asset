@@ -12,13 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55ace1a246617954da8d1a850df65b1b, type: 3}
   m_Name: npc_range
   m_EditorClassIdentifier: 
-  displayName: 
+  displayName: "\u043B\u0443\u0447\u043D\u0438\u043A_\u0434\u0440\u0443\u0433"
   prefab: {fileID: 1810530499472170092, guid: c011ae089d6d61d458fd0bf683a6a6d5, type: 3}
   maxHealth: 20
   speed: 5
   attack: 5
   defense: 5
-  role: 1
+  randomHP: 1
+  maxHealthRange: {x: 15, y: 25}
+  randomSpeed: 1
+  maxSpeedRange: {x: 3, y: 7}
+  randomAttack: 1
+  maxAttackRange: {x: 3, y: 7}
+  randomDefense: 1
+  maxDefenseRange: {x: 3, y: 7}
   abilities:
   - {fileID: 11400000, guid: 7a1e3c5b9d2f4a6c8e0b1d3f5a7c9e22, type: 2}
   - {fileID: 11400000, guid: 7a1e3c5b9d2f4a6c8e0b1d3f5a7c9e23, type: 2}
+  role: 1
