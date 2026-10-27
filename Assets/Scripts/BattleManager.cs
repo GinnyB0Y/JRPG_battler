@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 public class BattleManager : MonoBehaviour
 {
@@ -25,14 +26,19 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private Transform targetMarker;
     [SerializeField] private BattleUI battleUI;
     [SerializeField] private BattleCamera battleCamera;
+    [SerializeField] private PauseMenu pauseMenu;
 
     private readonly List<BattleUnit> units = new List<BattleUnit>();
     private readonly List<UnitView> views = new List<UnitView>();
     private BattlePresenter presenter;
     private UnitSelector selector;
+    private System.Random teamRandom;
+    private CancellationTokenSource battleCancellation;
+    private bool isLeaving;
 
     private void Awake()
     {
+        teamRandom = new System.Random(BattleSettings.Seed);
         presenter = gameObject.AddComponent<BattlePresenter>();
         selector = gameObject.AddComponent<UnitSelector>();
 
@@ -49,13 +55,58 @@ public class BattleManager : MonoBehaviour
         AiCommandSource ai = new AiCommandSource(rules, TimeSpan.FromSeconds(enemyThinkDelay));
         BattleLoop loop = new BattleLoop(field, rules, battleUI, ai, presenter);
 
-        battleUI.Bind(loop, rules, field, selector, menuSceneName);
+        battleUI.Bind(loop, rules, field, selector);
+        battleUI.ExitRequested += ExitToMenu;
         selector.Bind(loop);
 
         if (battleCamera != null)
             battleCamera.Bind(loop, battleUI, views);
 
-        loop.RunAsync(destroyCancellationToken).Forget();
+        if (pauseMenu != null)
+        {
+            pauseMenu.Bind(loop);
+            pauseMenu.RestartRequested += Restart;
+            pauseMenu.ExitRequested += ExitToMenu;
+        }
+
+        battleCancellation = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        loop.RunAsync(battleCancellation.Token).Forget();
+    }
+
+    private void OnDestroy()
+    {
+        if (battleUI != null)
+            battleUI.ExitRequested -= ExitToMenu;
+
+        if (pauseMenu != null)
+        {
+            pauseMenu.RestartRequested -= Restart;
+            pauseMenu.ExitRequested -= ExitToMenu;
+        }
+
+        battleCancellation?.Cancel();
+        battleCancellation?.Dispose();
+    }
+
+    private void Restart()
+    {
+        LeaveAsync(SceneManager.GetActiveScene().name).Forget();
+    }
+
+    private void ExitToMenu()
+    {
+        LeaveAsync(menuSceneName).Forget();
+    }
+
+    private async UniTaskVoid LeaveAsync(string sceneName)
+    {
+        if (isLeaving)
+            return;
+
+        isLeaving = true;
+        battleCancellation.Cancel();
+        Time.timeScale = 1f;
+        await SceneManager.LoadSceneAsync(sceneName);
     }
 
     private void SpawnPlayerTeam()
@@ -82,10 +133,10 @@ public class BattleManager : MonoBehaviour
         return meleePositions.Concat(rangePositions).ToArray();
     }
 
-    private static IEnumerable<T> PickRandom<T>(T[] pool, int count)
+    private IEnumerable<T> PickRandom<T>(T[] pool, int count)
     {
         for (int i = 0; i < count; i++)
-            yield return pool[Random.Range(0, pool.Length)];
+            yield return pool[teamRandom.Next(pool.Length)];
     }
 
     private void SpawnTeam(IEnumerable<UnitData> team, Team side, Transform[] line, int vanguardSize)

@@ -8,6 +8,8 @@ public static class BattleSettings
     private static int playerTeamSize = MinTeamSize;
     private static int enemyTeamSize = MinTeamSize;
 
+    public static int Seed { get; private set; } = System.Environment.TickCount;
+
     public static int PlayerTeamSize
     {
         get => playerTeamSize;
@@ -18,6 +20,11 @@ public static class BattleSettings
     {
         get => enemyTeamSize;
         set => enemyTeamSize = ClampTeamSize(value);
+    }
+
+    public static void RollSeed()
+    {
+        Seed = System.Environment.TickCount;
     }
 
     private static int ClampTeamSize(int value)

@@ -5,7 +5,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BattleUI : MonoBehaviour, ICommandSource
@@ -46,10 +45,10 @@ public class BattleUI : MonoBehaviour, ICommandSource
     private BattleLoop loop;
     private CombatRules rules;
     private UnitSelector selector;
-    private string menuSceneName;
 
     public event Action ActionChoiceStarted;
     public event Action ActionChoiceEnded;
+    public event Action ExitRequested;
 
     private void Awake()
     {
@@ -89,12 +88,11 @@ public class BattleUI : MonoBehaviour, ICommandSource
         loop.BattleEnded -= OnBattleEnded;
     }
 
-    public void Bind(BattleLoop battleLoop, CombatRules combatRules, Battlefield field, UnitSelector unitSelector, string menuScene)
+    public void Bind(BattleLoop battleLoop, CombatRules combatRules, Battlefield field, UnitSelector unitSelector)
     {
         loop = battleLoop;
         rules = combatRules;
         selector = unitSelector;
-        menuSceneName = menuScene;
 
         loop.RoundStarted += OnRoundStarted;
         loop.ActorChoiceStarted += OnActorChoiceStarted;
@@ -332,13 +330,8 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
     private void OnMenuButtonClicked()
     {
-        LoadMenuAsync().Forget();
-    }
-
-    private async UniTaskVoid LoadMenuAsync()
-    {
         menuButton.interactable = false;
-        await SceneManager.LoadSceneAsync(menuSceneName);
+        ExitRequested?.Invoke();
     }
 
     private readonly struct ChoiceOption

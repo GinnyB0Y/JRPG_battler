@@ -43,6 +43,7 @@ public class MainMenu : MonoBehaviour
 
     private async UniTaskVoid LoadBattleAsync()
     {
+        BattleSettings.RollSeed();
         canvas.gameObject.SetActive(false);
         await SceneManager.LoadSceneAsync(battleSceneName);
     }

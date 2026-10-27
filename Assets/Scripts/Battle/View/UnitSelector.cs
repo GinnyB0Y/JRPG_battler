@@ -86,6 +86,9 @@ public class UnitSelector : MonoBehaviour
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
 
+                if (Time.timeScale <= 0f)
+                    continue;
+
                 BattleUnit pointed = GetPointedUnit();
                 BattleUnit next = pointed != null && hoverable.Contains(pointed) ? pointed : null;
 
