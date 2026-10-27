@@ -17,13 +17,15 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private Transform[] enemyRangePositions;
 
     [SerializeField] private string menuSceneName = "menu_scene";
-    [SerializeField, Min(0f)] private float enemyThinkDelay = 0.6f;
+    [SerializeField, Min(0f)] private float enemyThinkDelay;
 
     [Header("Visuals")]
     [SerializeField] private GameObject activeMarkerPrefab;
     [SerializeField] private BattleUI battleUI;
+    [SerializeField] private BattleCamera battleCamera;
 
     private readonly List<BattleUnit> units = new List<BattleUnit>();
+    private readonly List<UnitView> views = new List<UnitView>();
     private BattlePresenter presenter;
 
     private void Awake()
@@ -46,6 +48,9 @@ public class BattleManager : MonoBehaviour
 
         battleUI.Bind(loop, rules, field, menuSceneName);
         presenter.Bind(loop);
+
+        if (battleCamera != null)
+            battleCamera.Bind(loop, views);
 
         loop.RunAsync(destroyCancellationToken).Forget();
     }
@@ -100,6 +105,7 @@ public class BattleManager : MonoBehaviour
 
         UnitView view = instance.AddComponent<UnitView>();
         view.Bind(unit);
+        views.Add(view);
         presenter.Register(view);
     }
 }

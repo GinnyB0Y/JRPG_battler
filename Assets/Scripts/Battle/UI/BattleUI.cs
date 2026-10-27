@@ -123,7 +123,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
             .ToList();
         options.Add(new ChoiceOption("Skip", true));
 
-        int index = await ChooseAsync($"{unit.Name}: choose an action", options, cancellationToken);
+        int index = await ChooseAsync($"{unit.Name}: выбирает действие", options, cancellationToken);
         return index < abilities.Count ? abilities[index] : null;
     }
 
@@ -135,7 +135,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
             .ToList();
         options.Add(new ChoiceOption("Back", true));
 
-        int index = await ChooseAsync($"{ability.DisplayName}: choose a target", options, cancellationToken);
+        int index = await ChooseAsync($"{ability.DisplayName}: выбирает цель", options, cancellationToken);
         return index < targets.Count ? targets[index] : null;
     }
 
@@ -191,7 +191,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
     private void OnRoundStarted(int round)
     {
-        AddLog($"<b>Round {round}</b>");
+        AddLog($"<b>Раунд {round}</b>");
         RefreshQueue();
     }
 
@@ -206,7 +206,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
         AddLog(Describe(outcome));
 
         if (outcome.KilledTarget)
-            AddLog($"{Colored(outcome.Target)} dies");
+            AddLog($"{Colored(outcome.Target)} умэр");
 
         RefreshQueue();
     }
@@ -218,7 +218,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
         AddLog(isVictory ? "<b>Victory</b>" : "<b>Defeat</b>");
         HighlightStatus(null);
         ShowSlots(queueSlots, 0);
-        resultText.text = isVictory ? "Victory" : "Defeat";
+        resultText.text = isVictory ? "ПОБЕДА" : "ПОРАЖЕНИЕ";
         resultText.color = isVictory ? victoryColor : defeatColor;
         resultPanel.SetActive(true);
     }
@@ -260,19 +260,19 @@ public class BattleUI : MonoBehaviour, ICommandSource
         string user = Colored(outcome.User);
 
         if (outcome.IsSkip)
-            return $"{user} skips the turn";
+            return $"{user} пропускает ход";
 
         string target = Colored(outcome.Target);
         string ability = outcome.Ability.DisplayName;
 
         if (outcome.IsHeal)
-            return $"{user} uses {ability} on {target}: +{outcome.Amount} HP";
+            return $"{user} использует {ability} на {target}: +{outcome.Amount} HP";
 
         int chance = Mathf.RoundToInt(outcome.HitChance * 100f);
 
         return outcome.IsHit
-            ? $"{user} hits {target} with {ability}: -{outcome.Amount} HP ({chance}%)"
-            : $"{user} misses {target} with {ability} ({chance}%)";
+            ? $"{user} попадает по {target} с {ability}: -{outcome.Amount} HP ({chance}%)"
+            : $"{user} промахивается по {target} с {ability} ({chance}%)";
     }
 
     private string FormatTarget(BattleUnit user, AbilityData ability, BattleUnit target)

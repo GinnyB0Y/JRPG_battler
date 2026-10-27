@@ -65,7 +65,7 @@ public class BattleLoop
 
         if (!rules.IsValid(action))
         {
-            Debug.LogWarning($"{unit.Name} chose an invalid action, the turn is skipped");
+            Debug.LogWarning($"{unit.Name} выбрал чёт не то");
             action = BattleAction.Skip(unit);
         }
 

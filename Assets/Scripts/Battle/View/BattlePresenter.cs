@@ -136,7 +136,6 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     {
         if (prefab == null)
         {
-            Debug.LogWarning("Projectile prefab is not assigned to the ability");
             return;
         }
 
@@ -188,7 +187,7 @@ public class BattlePresenter : MonoBehaviour, IBattlePresenter
     private static string GetPopupText(ActionOutcome outcome)
     {
         if (!outcome.IsHit)
-            return "Miss";
+            return "Промах";
 
         return outcome.IsHeal ? $"+{outcome.Amount}" : $"-{outcome.Amount}";
     }
