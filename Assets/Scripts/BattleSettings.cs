@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public static class BattleSettings
 {
@@ -25,7 +25,7 @@ public static class BattleSettings
             return enemyRoles;
     }
 
-    public static void SetRoles(Team team, IEnumerable<UnitRole> roles)
+    public static void SetRoles(Team team, List<UnitRole> roles)
     {
         List<UnitRole> target;
 
@@ -35,7 +35,11 @@ public static class BattleSettings
             target = enemyRoles;
 
         target.Clear();
-        target.AddRange(roles.Take(GetMaxCount(team)));
+
+        int count = Math.Min(roles.Count, GetMaxCount(team));
+
+        for (int i = 0; i < count; i++)
+            target.Add(roles[i]);
     }
 
     public static int GetMinCount(Team team)

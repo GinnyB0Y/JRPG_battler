@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TMPro;
@@ -12,7 +11,6 @@ public class BattleUI : MonoBehaviour, ICommandSource
     private const string PlayerColor = "#6FB7FF";
     private const string EnemyColor = "#FF7A6F";
     private const string ActiveColor = "#FFD84D";
-    private const int ReselectActorChoice = -1;
 
     [Header("Turn Queue")]
     [SerializeField] private TMP_Text roundText;
@@ -35,6 +33,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
     [SerializeField] private GameObject resultPanel;
     [SerializeField] private TMP_Text resultText;
     [SerializeField] private Button menuButton;
+    [SerializeField] private Button restartButton;
     [SerializeField] private Color victoryColor = new Color(0.45f, 1f, 0.5f);
     [SerializeField] private Color defeatColor = new Color(1f, 0.4f, 0.35f);
 
@@ -50,10 +49,14 @@ public class BattleUI : MonoBehaviour, ICommandSource
     public event Action ActionChoiceStarted;
     public event Action ActionChoiceEnded;
     public event Action ExitRequested;
+    public event Action RestartRequested;
 
     private void Awake()
     {
-        choiceLabels = choiceButtons.Select(button => button.GetComponentInChildren<TMP_Text>(true)).ToArray();
+        choiceLabels = new TMP_Text[choiceButtons.Length];
+
+        for (int i = 0; i < choiceButtons.Length; i++)
+            choiceLabels[i] = choiceButtons[i].GetComponentInChildren<TMP_Text>(true);
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -62,6 +65,7 @@ public class BattleUI : MonoBehaviour, ICommandSource
         }
 
         menuButton.onClick.AddListener(OnMenuButtonClicked);
+        restartButton.onClick.AddListener(OnRestartButtonClicked);
 
         choicePanel.SetActive(false);
         resultPanel.SetActive(false);
@@ -78,12 +82,12 @@ public class BattleUI : MonoBehaviour, ICommandSource
             button.onClick.RemoveAllListeners();
 
         menuButton.onClick.RemoveListener(OnMenuButtonClicked);
+        restartButton.onClick.RemoveListener(OnRestartButtonClicked);
 
         if (loop == null)
             return;
 
         loop.RoundStarted -= OnRoundStarted;
-        loop.ActorChoiceStarted -= OnActorChoiceStarted;
         loop.TurnStarted -= OnTurnStarted;
         loop.ActionResolved -= OnActionResolved;
         loop.BattleEnded -= OnBattleEnded;
@@ -96,7 +100,6 @@ public class BattleUI : MonoBehaviour, ICommandSource
         selector = unitSelector;
 
         loop.RoundStarted += OnRoundStarted;
-        loop.ActorChoiceStarted += OnActorChoiceStarted;
         loop.TurnStarted += OnTurnStarted;
         loop.ActionResolved += OnActionResolved;
         loop.BattleEnded += OnBattleEnded;
@@ -105,46 +108,20 @@ public class BattleUI : MonoBehaviour, ICommandSource
         BindStatusViews(field.GetTeam(Team.Enemy), enemyStatusViews);
     }
 
-    public async UniTask<BattleUnit> ChooseActorAsync(IReadOnlyList<BattleUnit> candidates, CancellationToken cancellationToken)
-    {
-        choiceTitleText.text = "Выберите персонажа для хода";
-        ShowSlots(choiceButtons, 0);
-        choicePanel.SetActive(true);
-
-        try
-        {
-            return await selector.SelectActorAsync(candidates, cancellationToken);
-        }
-        finally
-        {
-            if (choicePanel != null)
-                choicePanel.SetActive(false);
-        }
-    }
-
     public async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
         ActionChoiceStarted?.Invoke();
 
         try
         {
-            List<AbilityData> abilities = unit.Abilities.ToList();
-
             while (true)
             {
-                int choice = await ChooseAbilityAsync(unit, abilities, cancellationToken);
+                AbilityData ability = await ChooseAbilityAsync(unit, cancellationToken);
 
-                if (choice == ReselectActorChoice)
-                    return null;
-
-                if (choice >= abilities.Count)
+                if (ability == null)
                     return BattleAction.Skip(unit);
 
-                AbilityData ability = abilities[choice];
-                (bool reselectActor, BattleUnit target) = await ChooseTargetAsync(unit, ability, cancellationToken);
-
-                if (reselectActor)
-                    return null;
+                BattleUnit target = await ChooseTargetAsync(unit, ability, cancellationToken);
 
                 if (target != null)
                     return BattleAction.Use(unit, ability, target);
@@ -156,55 +133,40 @@ public class BattleUI : MonoBehaviour, ICommandSource
         }
     }
 
-    private async UniTask<int> ChooseAbilityAsync(BattleUnit unit, List<AbilityData> abilities, CancellationToken cancellationToken)
+    private async UniTask<AbilityData> ChooseAbilityAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
-        List<ChoiceOption> options = abilities
-            .Select(ability => new ChoiceOption(ability.DisplayName, rules.CanUse(unit, ability)))
-            .ToList();
+        IReadOnlyList<AbilityData> abilities = unit.Abilities;
+        List<ChoiceOption> options = new List<ChoiceOption>();
+
+        foreach (AbilityData ability in abilities)
+            options.Add(new ChoiceOption(ability.DisplayName, rules.CanUse(unit, ability)));
+
         options.Add(new ChoiceOption("Skip", true));
 
-        using (CancellationTokenSource phase = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-        {
-            (int winner, int index, BattleUnit _) = await UniTask.WhenAny(
-                ChooseAsync($"{unit.Name}: выбирает действие", options, phase.Token),
-                selector.WaitForClickAsync(unit, phase.Token));
+        int index = await ChooseAsync($"{unit.Name}: выбирает действие", options, cancellationToken);
 
-            phase.Cancel();
-
-            if (winner == 0)
-                return index;
-            else
-                return ReselectActorChoice;
-        }
+        if (index < abilities.Count)
+            return abilities[index];
+        else
+            return null;
     }
 
-    private async UniTask<(bool reselectActor, BattleUnit target)> ChooseTargetAsync(BattleUnit unit, AbilityData ability, CancellationToken cancellationToken)
+    private async UniTask<BattleUnit> ChooseTargetAsync(BattleUnit unit, AbilityData ability, CancellationToken cancellationToken)
     {
         ChoiceOption[] options = { new ChoiceOption("Back", true) };
-        List<BattleUnit> targets = rules.GetTargets(unit, ability).ToList();
 
         using (CancellationTokenSource phase = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
         {
-            UniTask<BattleUnit> actorClick;
-
-            if (targets.Contains(unit))
-                actorClick = UniTask.Never<BattleUnit>(phase.Token);
-            else
-                actorClick = selector.WaitForClickAsync(unit, phase.Token);
-
-            (int winner, BattleUnit target, int _, BattleUnit _) = await UniTask.WhenAny(
-                selector.SelectTargetAsync(targets, phase.Token),
-                ChooseAsync($"{ability.DisplayName}: выбирает цель", options, phase.Token),
-                actorClick);
+            (int winner, BattleUnit target, int _) = await UniTask.WhenAny(
+                selector.SelectTargetAsync(rules.GetTargets(unit, ability), phase.Token),
+                ChooseAsync($"{ability.DisplayName}: выбирает цель", options, phase.Token));
 
             phase.Cancel();
 
             if (winner == 0)
-                return (false, target);
-            else if (winner == 2)
-                return (true, null);
+                return target;
             else
-                return (false, null);
+                return null;
         }
     }
 
@@ -246,29 +208,30 @@ public class BattleUI : MonoBehaviour, ICommandSource
         pendingChoice?.TrySetResult(index);
     }
 
-    private void BindStatusViews(IEnumerable<BattleUnit> team, UnitStatusView[] views)
+    private void BindStatusViews(List<BattleUnit> units, UnitStatusView[] views)
     {
-        List<BattleUnit> units = team.OrderBy(unit => unit.Slot).Take(views.Length).ToList();
+        units.Sort(CompareSlot);
 
-        for (int i = 0; i < units.Count; i++)
+        int count = Mathf.Min(units.Count, views.Length);
+
+        for (int i = 0; i < count; i++)
         {
             views[i].Bind(units[i]);
             boundStatusViews.Add(views[i]);
         }
 
-        ShowSlots(views, units.Count);
+        ShowSlots(views, count);
+    }
+
+    private static int CompareSlot(BattleUnit a, BattleUnit b)
+    {
+        return a.Slot.CompareTo(b.Slot);
     }
 
     private void OnRoundStarted(int round)
     {
         AddLog($"<b>Раунд {round}</b>");
         RefreshQueue();
-    }
-
-    private void OnActorChoiceStarted(Team team)
-    {
-        RefreshQueue();
-        HighlightStatus(null);
     }
 
     private void OnTurnStarted(BattleUnit unit)
@@ -299,12 +262,14 @@ public class BattleUI : MonoBehaviour, ICommandSource
             AddLog("<b>Victory</b>");
             resultText.text = "ПОБЕДА";
             resultText.color = victoryColor;
+            restartButton.gameObject.SetActive(false);
         }
         else
         {
             AddLog("<b>Defeat</b>");
             resultText.text = "ПОРАЖЕНИЕ";
             resultText.color = defeatColor;
+            restartButton.gameObject.SetActive(true);
         }
 
         HighlightStatus(null);
@@ -320,7 +285,10 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
     private void RefreshQueue()
     {
-        List<string> entries = loop.UpcomingUnits.Select(Colored).ToList();
+        List<string> entries = new List<string>();
+
+        foreach (BattleUnit unit in loop.GetUpcomingUnits())
+            entries.Add(Colored(unit));
 
         if (loop.ActiveUnit != null)
             entries.Insert(0, $"<color={ActiveColor}><b>[{loop.ActiveUnit.Name}]</b></color>");
@@ -388,8 +356,20 @@ public class BattleUI : MonoBehaviour, ICommandSource
 
     private void OnMenuButtonClicked()
     {
-        menuButton.interactable = false;
+        DisableResultButtons();
         ExitRequested?.Invoke();
+    }
+
+    private void OnRestartButtonClicked()
+    {
+        DisableResultButtons();
+        RestartRequested?.Invoke();
+    }
+
+    private void DisableResultButtons()
+    {
+        menuButton.interactable = false;
+        restartButton.interactable = false;
     }
 
     private readonly struct ChoiceOption

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class CombatRules
 {
@@ -26,10 +25,10 @@ public class CombatRules
         if (ability.RequiresFrontUser && !field.IsFront(user))
             return false;
 
-        return GetTargets(user, ability).Any();
+        return GetTargets(user, ability).Count > 0;
     }
 
-    public IEnumerable<BattleUnit> GetTargets(BattleUnit user, AbilityData ability)
+    public List<BattleUnit> GetTargets(BattleUnit user, AbilityData ability)
     {
         Team side;
 

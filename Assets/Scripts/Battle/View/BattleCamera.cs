@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class BattleCamera : MonoBehaviour
@@ -47,7 +46,6 @@ public class BattleCamera : MonoBehaviour
     public void Bind(BattleLoop battleLoop, BattleUI ui, IEnumerable<UnitView> unitViews)
     {
         loop = battleLoop;
-        loop.ActorChoiceStarted += OnActorChoiceStarted;
         loop.TurnStarted += OnTurnStarted;
         loop.BattleEnded += OnBattleEnded;
 
@@ -66,7 +64,6 @@ public class BattleCamera : MonoBehaviour
         if (loop == null)
             return;
 
-        loop.ActorChoiceStarted -= OnActorChoiceStarted;
         loop.TurnStarted -= OnTurnStarted;
         loop.BattleEnded -= OnBattleEnded;
         battleUI.ActionChoiceStarted -= OnActionChoiceStarted;
@@ -115,15 +112,9 @@ public class BattleCamera : MonoBehaviour
         transform.SetPositionAndRotation(basePosition + drift, rotation * sway);
     }
 
-    private void OnActorChoiceStarted(Team team)
-    {
-        followed = null;
-        watched = null;
-    }
-
     private void OnTurnStarted(BattleUnit unit)
     {
-        UnitView view = views.FirstOrDefault(candidate => candidate.Unit == unit);
+        UnitView view = FindView(unit);
 
         if (unit.Team == Team.Player)
         {
@@ -152,6 +143,17 @@ public class BattleCamera : MonoBehaviour
     private void OnActionChoiceEnded()
     {
         isChoosing = false;
+    }
+
+    private UnitView FindView(BattleUnit unit)
+    {
+        foreach (UnitView view in views)
+        {
+            if (view.Unit == unit)
+                return view;
+        }
+
+        return null;
     }
 
     private Vector3 GetTeamFocus()

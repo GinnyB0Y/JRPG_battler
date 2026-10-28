@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -19,10 +18,10 @@ public class BattleManager : MonoBehaviour
 
     [SerializeField] private string menuSceneName;
     [SerializeField, Min(0f)] private float enemyThinkDelay;
+    [SerializeField, Range(0, 100)] private int enemyRandomActionChance = 50;
 
     [Header("Visuals")]
     [SerializeField] private GameObject activeMarkerPrefab;
-    [SerializeField] private Transform hoverMarker;
     [SerializeField] private Transform targetMarker;
     [SerializeField] private BattleUI battleUI;
     [SerializeField] private BattleCamera battleCamera;
@@ -45,18 +44,19 @@ public class BattleManager : MonoBehaviour
         SpawnPlayerTeam();
         SpawnEnemyTeam();
 
-        selector.Init(views, activeMarkerPrefab, hoverMarker, targetMarker);
+        selector.Init(views, activeMarkerPrefab, targetMarker);
     }
 
     private void Start()
     {
         Battlefield field = new Battlefield(units);
         CombatRules rules = new CombatRules(field, new System.Random());
-        AiCommandSource ai = new AiCommandSource(rules, TimeSpan.FromSeconds(enemyThinkDelay));
+        AiCommandSource ai = new AiCommandSource(rules, TimeSpan.FromSeconds(enemyThinkDelay), enemyRandomActionChance, new System.Random());
         BattleLoop loop = new BattleLoop(field, rules, battleUI, ai, presenter);
 
         battleUI.Bind(loop, rules, field, selector);
         battleUI.ExitRequested += ExitToMenu;
+        battleUI.RestartRequested += Restart;
         selector.Bind(loop);
 
         if (battleCamera != null)
@@ -76,7 +76,10 @@ public class BattleManager : MonoBehaviour
     private void OnDestroy()
     {
         if (battleUI != null)
+        {
             battleUI.ExitRequested -= ExitToMenu;
+            battleUI.RestartRequested -= Restart;
+        }
 
         if (pauseMenu != null)
         {
@@ -111,47 +114,64 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnPlayerTeam()
     {
-        Transform[] line = BuildLine(npcMeleePositions, npcRangePositions);
+        Transform[] line = BuildTeams(npcMeleePositions, npcRangePositions);
 
         List<UnitData> team = new List<UnitData> { playerData };
-        team.AddRange(BattleSettings.NpcRoles.Select(role => PickByRole(npcPool, role)));
+
+        foreach (UnitRole role in BattleSettings.NpcRoles)
+            team.Add(PickByRole(npcPool, role));
 
         SpawnTeam(team, Team.Player, line, npcMeleePositions.Length);
     }
 
     private void SpawnEnemyTeam()
     {
-        Transform[] line = BuildLine(enemyMeleePositions, enemyRangePositions);
-        List<UnitData> team = BattleSettings.EnemyRoles.Select(role => PickByRole(enemyPool, role)).ToList<UnitData>();
+        Transform[] line = BuildTeams(enemyMeleePositions, enemyRangePositions);
+        List<UnitData> team = new List<UnitData>();
+
+        foreach (UnitRole role in BattleSettings.EnemyRoles)
+            team.Add(PickByRole(enemyPool, role));
 
         SpawnTeam(team, Team.Enemy, line, enemyMeleePositions.Length);
     }
 
-    private static Transform[] BuildLine(Transform[] meleePositions, Transform[] rangePositions)
+    private static Transform[] BuildTeams(Transform[] meleePositions, Transform[] rangePositions)
     {
-        return meleePositions.Concat(rangePositions).ToArray();
+        List<Transform> line = new List<Transform>();
+        line.AddRange(meleePositions);
+        line.AddRange(rangePositions);
+        return line.ToArray();
     }
 
-    private T PickByRole<T>(T[] pool, UnitRole role) where T : UnitData
+    private UnitData PickByRole(UnitData[] pool, UnitRole role)
     {
-        T[] matching = pool.Where(data => data.Role == role).ToArray();
+        List<UnitData> matching = new List<UnitData>();
 
-        if (matching.Length == 0)
+        foreach (UnitData data in pool)
         {
-            Debug.LogWarning($"No {typeof(T).Name} with role {role} in pool, picking any");
-            matching = pool;
+            if (data.Role == role)
+                matching.Add(data);
         }
 
-        return matching[teamRandom.Next(matching.Length)];
+        if (matching.Count == 0)
+        {
+            Debug.LogWarning($"нет {pool[0].GetType().Name} с ролью {role}");
+            matching.AddRange(pool);
+        }
+
+        return matching[teamRandom.Next(matching.Count)];
     }
 
-    private void SpawnTeam(IEnumerable<UnitData> team, Team side, Transform[] line, int vanguardSize)
+    private void SpawnTeam(List<UnitData> team, Team side, Transform[] line, int vanguardSize)
     {
         int front = 0;
         int back = line.Length - 1;
 
-        foreach (UnitData data in team.Take(line.Length))
+        int count = Mathf.Min(team.Count, line.Length);
+
+        for (int i = 0; i < count; i++)
         {
+            UnitData data = team[i];
             int slot;
 
             if (data.Role == UnitRole.Melee)

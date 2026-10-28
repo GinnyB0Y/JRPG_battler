@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public abstract class UnitData : ScriptableObject
@@ -53,15 +52,24 @@ public abstract class UnitData : ScriptableObject
         List<AbilityData> result = new List<AbilityData>();
 
         if (abilities != null)
-            result.AddRange(abilities.Where(ability => ability != null).Distinct());
+        {
+            foreach (AbilityData ability in abilities)
+            {
+                if (ability != null && !result.Contains(ability))
+                    result.Add(ability);
+            }
+        }
 
         if (abilitiesPlus == null)
             return result;
 
-        List<AbilityData> extra = abilitiesPlus
-            .Where(ability => ability != null && !result.Contains(ability))
-            .Distinct()
-            .ToList();
+        List<AbilityData> extra = new List<AbilityData>();
+
+        foreach (AbilityData ability in abilitiesPlus)
+        {
+            if (ability != null && !result.Contains(ability) && !extra.Contains(ability))
+                extra.Add(ability);
+        }
 
         for (int i = 0; i < abilityCounter && extra.Count > 0; i++)
         {
