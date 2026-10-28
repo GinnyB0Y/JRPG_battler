@@ -18,6 +18,7 @@ public class BattleManager : MonoBehaviour
 
     [SerializeField] private string menuSceneName;
     [SerializeField, Min(0f)] private float enemyThinkDelay;
+    [SerializeField, Range(0, 100)] private int enemyRandomActionChance = 50;
 
     [Header("Visuals")]
     [SerializeField] private GameObject activeMarkerPrefab;
@@ -50,7 +51,7 @@ public class BattleManager : MonoBehaviour
     {
         Battlefield field = new Battlefield(units);
         CombatRules rules = new CombatRules(field, new System.Random());
-        AiCommandSource ai = new AiCommandSource(rules, TimeSpan.FromSeconds(enemyThinkDelay));
+        AiCommandSource ai = new AiCommandSource(rules, TimeSpan.FromSeconds(enemyThinkDelay), enemyRandomActionChance, new System.Random());
         BattleLoop loop = new BattleLoop(field, rules, battleUI, ai, presenter);
 
         battleUI.Bind(loop, rules, field, selector);

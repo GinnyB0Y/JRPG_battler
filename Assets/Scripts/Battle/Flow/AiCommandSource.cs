@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
@@ -9,16 +10,28 @@ public class AiCommandSource : ICommandSource
 
     private readonly CombatRules rules;
     private readonly TimeSpan thinkDelay;
+    private readonly int randomActionChance;
+    private readonly Random random;
 
-    public AiCommandSource(CombatRules rules, TimeSpan thinkDelay)
+    public AiCommandSource(CombatRules rules, TimeSpan thinkDelay, int randomActionChance, Random random)
     {
         this.rules = rules;
         this.thinkDelay = thinkDelay;
+        this.randomActionChance = randomActionChance;
+        this.random = random;
     }
 
     public async UniTask<BattleAction> ChooseActionAsync(BattleUnit unit, CancellationToken cancellationToken)
     {
         await UniTask.Delay(thinkDelay, cancellationToken: cancellationToken);
+
+        if (random.Next(100) < randomActionChance)
+        {
+            BattleAction randomAction = ChooseRandom(unit);
+
+            if (randomAction != null)
+                return randomAction;
+        }
 
         BattleAction heal = ChooseHeal(unit);
 
@@ -31,6 +44,41 @@ public class AiCommandSource : ICommandSource
             return attack;
         else
             return BattleAction.Skip(unit);
+    }
+
+    private BattleAction ChooseRandom(BattleUnit unit)
+    {
+        List<AbilityData> abilities = new List<AbilityData>();
+
+        foreach (AbilityData ability in unit.Abilities)
+        {
+            if (rules.CanUse(unit, ability) && GetSensibleTargets(unit, ability).Count > 0)
+                abilities.Add(ability);
+        }
+
+        if (abilities.Count == 0)
+            return null;
+
+        AbilityData chosen = abilities[random.Next(abilities.Count)];
+        List<BattleUnit> targets = GetSensibleTargets(unit, chosen);
+        BattleUnit target = targets[random.Next(targets.Count)];
+
+        return BattleAction.Use(unit, chosen, target);
+    }
+
+    private List<BattleUnit> GetSensibleTargets(BattleUnit unit, AbilityData ability)
+    {
+        List<BattleUnit> result = new List<BattleUnit>();
+
+        foreach (BattleUnit target in rules.GetTargets(unit, ability))
+        {
+            if (ability.Effect == AbilityEffect.Heal && target.MissingHealth == 0)
+                continue;
+
+            result.Add(target);
+        }
+
+        return result;
     }
 
     private BattleAction ChooseHeal(BattleUnit unit)
